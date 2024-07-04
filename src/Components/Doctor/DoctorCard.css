@@ -1,0 +1,88 @@
+/* Doctor card */
+.dc-doctor-card {
+  display: flex;
+  align-items: center;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 10px;
+  background-color: white;
+  cursor: pointer;
+  transition: box-shadow 0.3s ease;
+  margin-bottom: 10px;
+  position: relative; /* Add relative positioning */
+}
+
+.dc-doctor-card:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  background: #2BB673;
+  color: white;
+}
+
+.dc-doctor-card-content {
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.dc-doctor-image {
+  border-radius: 10%;
+  width: 90px;
+  height: 90px;
+}
+
+.dc-doctor-info {
+  flex-grow: 1;
+  margin-left: 10px;
+}
+
+.dc-doctor-header {
+  display: flex;
+  align-items: center;
+}
+
+.dc-doctor-name {
+  font-size: 26px; /* Increase the font size of the name */
+  font-weight: bold;
+  margin: 0;
+  display: flex;
+  align-items: baseline; /* Align items on the same baseline */
+}
+
+.dc-doctor-education {
+  font-size: 0.5em; /* Decrease the font size of the qualification */
+  color: gray;
+  margin-left: 10px; /* Increase spacing between name and qualification */
+}
+
+.dc-doctor-rating {
+  margin-top: 12px;
+  font-size: 1.2em; /* Increase the size of the rating stars */
+}
+
+.dc-star-filled {
+  color: hsl(51, 100%, 50%);
+}
+
+.dc-star-empty {
+  color: #ccc;
+}
+
+.dc-doctor-heart {
+  font-size: 1.5em;
+  position: absolute; /* Use absolute positioning */
+  top: 10px; /* Adjust top position */
+  right: 10px; /* Adjust right position */
+}
+
+/* Media query for mobile screens */
+@media (max-width: 768px) {
+  .dc-doctor-name {
+    flex-direction: column; /* Stack name and education vertically */
+    align-items: flex-start; /* Align text to the start */
+  }
+
+  .dc-doctor-education {
+    margin-left: 0; /* Remove left margin for mobile */
+    margin-top: 5px; /* Add top margin for separation */
+  }
+}

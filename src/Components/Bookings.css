@@ -1,0 +1,98 @@
+.bookings-container {
+  padding: 2rem;
+  background-color: white;
+  color: black;
+}
+
+.bookings-content {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.bookings-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
+.booking-card {
+  background-color: #d9d9d9;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  display: flex;
+  justify-content: space-between;
+  flex-direction: row;
+}
+
+.booking-date-time {
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  flex: 1;
+  margin: 0 1rem;
+}
+
+.booking-doctor {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+  margin: 0 1rem;
+}
+
+.booking-details {
+  display: flex;
+  flex-direction: column;
+  align-items: end;
+  flex: 1;
+  margin: 0 1rem;
+}
+
+.booking-title {
+  font-size: 26px;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+}
+
+.booking-date-time p,
+.booking-doctor p,
+.booking-details p {
+  font-size: 1.125rem;
+  font-weight: normal;
+}
+
+.amount-title {
+  font-size: 1.25rem;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+}
+
+.amount-value {
+  font-size: 1.125rem;
+  font-weight: normal;
+}
+.money{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: start;
+}
+/* Responsive styles */
+@media (max-width: 768px) {
+  .booking-card {
+    flex-direction: column;
+    align-items: start;
+  }
+
+  .booking-date-time,
+  .booking-doctor,
+  .booking-details {
+    align-items: start;
+    margin: 0.5rem 0;
+  }
+
+  .booking-doctor,
+  .booking-details {
+    align-items: start;
+  }
+}

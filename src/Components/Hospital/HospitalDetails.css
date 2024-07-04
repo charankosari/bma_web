@@ -1,0 +1,125 @@
+/* Hide scrollbar for Chrome, Safari, and Opera */
+.raki::-webkit-scrollbar,
+.doctor-list::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbar for IE and Edge */
+.raki {
+  -ms-overflow-style: none;
+}
+
+/* Hide scrollbar for Firefox */
+.raki {
+  scrollbar-width: none;
+}
+
+.doctor-list {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
+/* Navbar */
+.navbar-sticky {
+  position: sticky;
+  top: 0;
+  z-index: 4;
+}
+
+/* Main content */
+.main-content {
+  height: 100%;
+  padding-top: 0;
+  padding-left: 1.25rem;
+  padding-right: 1.25rem;
+  background-color: #ffff;
+}
+
+/* Carousel container */
+.carousel-container {
+  position: sticky;
+  z-index: 2;
+  background: white; /* Ensure the background is solid to cover any content behind it */
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  overflow-x: auto; /* Allow horizontal overflow */
+  overflow-y: hidden; /* Prevent vertical overflow */
+  width: 100%;
+  margin-top: 10px;
+}
+
+/* Carousel items */
+.carousel-items {
+  display: flex;
+  overflow-x: auto; /* Allow horizontal overflow */
+  overflow-y: hidden; /* Hide vertical overflow */
+  scroll-behavior: smooth; /* Enable smooth scrolling */
+  flex-grow: 1; /* Ensure it takes available space */
+  gap: 20px;
+}
+
+/* Carousel item */
+.carousel-item {
+  flex: 0 0 auto;
+  margin-left: 10px;
+  margin-right: 0px;
+  padding: 10px;
+  text-align: center;
+  cursor: pointer;
+  border-radius: 10px;
+  width: 120px;
+}
+
+.carousel-item img {
+  width: 100px; /* Adjust width for mobile view */
+  height: 80px; /* Adjust height for mobile view */
+  border-radius: 10px;
+}
+
+.carousel-item h3 {
+  margin-top: 10px;
+  font-size: 12px; /* Adjust font size for mobile view */
+  color: #333;
+}
+
+/* Selected card border */
+.selected-card {
+  border: 2px solid #2BB673;
+}
+
+/* Hover border */
+.carousel-item:hover {
+  border: 1px solid #2BB673;
+}
+
+/* Doctor list */
+.doctor-list {
+  margin-top: 10px;
+  max-height: 800px;
+  margin-bottom: 20px;
+  overflow-y: scroll;
+  overflow-x: hidden; /* Hide horizontal overflow */
+}
+
+
+/* Media query for mobile devices */
+@media (max-width: 768px) {
+  .carousel-container {
+    padding: 0 10px; /* Add padding for better view on mobile */
+  }
+
+  .carousel-item {
+    width: 100px; /* Adjust width for mobile */
+    padding: 5px;
+  }
+
+  .carousel-item img {
+    width: 80px; /* Adjust width for mobile */
+    height: 60px; /* Adjust height for mobile */
+  }
+
+  .carousel-item h3 {
+    font-size: 10px; /* Adjust font size for mobile */
+  }
+}

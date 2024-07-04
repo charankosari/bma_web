@@ -1,0 +1,66 @@
+.hospital-list-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: white;
+    padding: 20px;
+  }
+  
+  .hospital-list-inner {
+    width: 100%;
+  }
+  
+  .hospital-list-scrollable {
+    width: 100%;
+    overflow-y: auto;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none;  /* Internet Explorer 10+ */
+  }
+  
+  .hospital-list-scrollable::-webkit-scrollbar { /* WebKit */
+    display: none;
+  }
+  
+  .no-hospitals-found {
+    text-align: center;
+    padding: 20px;
+  }
+  
+  .hospital-card {
+    background-color: #D9D9D9;
+    padding: 20px;
+    height: 12vh;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    transition: background-color 0.3s ease;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+  }
+  
+  .hospital-card:hover {
+    background-color: #2BB673;
+  }
+  
+  .hospital-logo {
+    width: 75px;
+    height: 75px;
+    margin-right: 10px;
+    background-color: white;
+    border-radius: 5px;
+  }
+  
+  .hospital-name {
+    font-weight: bold;
+    font-size: 24px;
+  }
+  
+  .hospital-location {
+    font-size: 1rem; /* Equivalent to text-base in Tailwind */
+  }
+  
+  .hospital-tagline {
+    font-size: 14px;
+    color: #555;
+  }
+  
