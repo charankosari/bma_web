@@ -7,13 +7,11 @@ function Signup({ toggleReg, mobileNumber, setMobileNumber , toggleMobile, toggl
     const [email, setEmail] = useState('');
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
-
     const handleRegister = async () => {
         if (!name || !email || !mobileNumber) {
             alert('Please fill in all fields');
             return;
         }
-
         setLoading(true);
 
         try {
@@ -24,7 +22,6 @@ function Signup({ toggleReg, mobileNumber, setMobileNumber , toggleMobile, toggl
                 },
                 body: JSON.stringify({ name, email, number: mobileNumber }),
             });
-
             const data = await response.json();
 
             if (response.ok) {
@@ -39,7 +36,6 @@ function Signup({ toggleReg, mobileNumber, setMobileNumber , toggleMobile, toggl
             setLoading(false);
         }
     };
-
     const login=()=>{
         toggleSignup();
         toggleMobile();
