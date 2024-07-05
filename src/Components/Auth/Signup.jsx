@@ -23,6 +23,7 @@ function Signup({ toggleReg, mobileNumber, setMobileNumber , toggleMobile, toggl
                 body: JSON.stringify({ name, email, number: mobileNumber }),
             });
             const data = await response.json();
+            console.log(data)
 
             if (response.ok) {
                 toggleSignup();

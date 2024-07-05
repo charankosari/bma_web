@@ -25,14 +25,14 @@ function OtpScreen({ toggleLogin, toggleOtp, mobileNumber }) {
   const handleSubmit = async () => {
     setLoading(true);
     const otpNumber = Number(otpno.join(''));
-
+const userid=sessionStorage.getItem('userid')
     try {
       const response = await fetch("https://server.bookmyappointments.in/api/bma/verifyotp", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ number, otp: otpNumber }),
+        body: JSON.stringify({ userid, otp: otpNumber }),
       });
 
       const data = await response.json();

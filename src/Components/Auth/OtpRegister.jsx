@@ -38,7 +38,6 @@ function OtpRegister({ toggleLogin, toggleReg, mobileNumber }) {
     // Log the data to inspect it
     console.log('Submitting OTP:', otpNumber);
     console.log('Submitting Mobile Number:', number);
-   const ok= sessionStorage.getItem("userData")
    const payload = {  number, otp: otpNumber };
     try {
       const response = await fetch("https://server.bookmyappointments.in/api/bma/verifyregisterotp", {
@@ -49,7 +48,7 @@ function OtpRegister({ toggleLogin, toggleReg, mobileNumber }) {
         body: JSON.stringify(payload),
       });
       const data = await response.json();
-
+      console.log(data)
       if (data.success) {
         localStorage.setItem('jwtToken', data.jwtToken);
         navigate('/');

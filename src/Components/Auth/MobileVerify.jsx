@@ -19,6 +19,8 @@ function MobileVerify({ toggleMobile,toggleLogin, toggleOtp, setMobileNumber, mo
       });
 
       const data = await response.json();
+      console.log(data)
+      sessionStorage.setItem('userid',data.userid)
       if (response.ok) {
         toggleMobile();
         toggleOtp();
