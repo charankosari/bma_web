@@ -41,7 +41,7 @@ function OtpRegister({ toggleLogin, toggleReg, mobileNumber }) {
    const ok= sessionStorage.getItem("userData")
    const payload = {  number, otp: otpNumber };
     try {
-      const response = await fetch("http://localhost:9999/api/bma/verifyregisterotp", {
+      const response = await fetch("https://server.bookmyappointments.in/api/bma/verifyregisterotp", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

@@ -1,5 +1,6 @@
 /* Fav.css */
 
+/* Container styles */
 .fav-container {
   display: flex;
   flex-direction: column;
@@ -9,6 +10,7 @@
   height: 100vh; /* Ensure the container takes the full height */
 }
 
+/* Tab buttons container */
 .fav-split-button {
   display: flex;
   margin-bottom: 20px;
@@ -16,6 +18,7 @@
   width: 40%; /* Initial width for larger screens */
 }
 
+/* Tab button styles */
 .fav-tab-button {
   padding: 10px 20px;
   border: 1px solid #ccc;
@@ -26,24 +29,29 @@
   text-align: center;
 }
 
+/* Left tab button specific styles */
 .fav-tab-button.left {
   border-radius: 20px 0 0 20px;
   border-right: none;
 }
 
+/* Right tab button specific styles */
 .fav-tab-button.right {
   border-radius: 0 20px 20px 0;
 }
 
+/* Active tab button styles */
 .fav-tab-button.active {
   background-color: #28a745;
   color: white;
 }
 
+/* Hover effect for tab buttons */
 .fav-tab-button:hover {
   background-color: #e0e0e0;
 }
 
+/* Content area styles */
 .fav-content {
   font-size: 60px; /* Decrease font size */
   color: gray;

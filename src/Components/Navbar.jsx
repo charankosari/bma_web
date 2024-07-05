@@ -151,6 +151,9 @@ const Navbar = ({ login, mobile, setMobile, toggleLogin }) => {
               <p onClick={() => handleCitySelect("Secunderabad")}>
                 Secunderabad
               </p>
+              <p onClick={() => handleCitySelect("Doolapally")}>
+                Doolapally
+              </p>
             </div>
           )}
         </div>
