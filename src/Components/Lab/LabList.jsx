@@ -1,45 +1,45 @@
 import React, { useState, useEffect } from "react";
-import './HospitalList.css';
+import './LabList.css';
 import { useNavigate } from "react-router-dom";
 import Navbar from "../Navbar";
 import Footer from "../Footer";
 
-const HospitalList = ({ login, toggleLogin, mobile, setMobile }) => {
+const LabList = ({ login, toggleLogin, mobile, setMobile }) => {
   const navigate = useNavigate();
   const [currentLocation, setCurrentLocation] = useState(null);
   const [areaName, setAreaName] = useState("");
   const [selectedLocation, setSelectedLocation] = useState("");
-  const [filteredHospitals, setFilteredHospitals] = useState([]);
-  const [hospitalsData, setHospitalsData] = useState([]);
-  const [loading, setLoading] = useState(true); // New loading state
+  const [filteredLabs, setFilteredLabs] = useState([]);
+  const [labsData, setLabsData] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchHospitals = async () => {
+    const fetchLabs = async () => {
       try {
-        setLoading(true); // Set loading to true before fetching data
+        setLoading(true);
         const response = await fetch('https://server.bookmyappointments.in/api/bma/hospital/admin/getallhospitals');
         const data = await response.json();
         if (data.success) {
           const formattedData = data.hospitals
-          .filter(hospital => hospital.role === "hospital")
-          .map(hospital => ({
-            id: hospital._id,
-            name: hospital.hospitalName,
-            location: hospital.address[0].city,
-            image: hospital.image[0] || '',
-            taglines: hospital.category.map(category => category.types),
-          }));
-          setHospitalsData(formattedData);
-          setFilteredHospitals(formattedData);
+            .filter(hospital => hospital.role === "lab")
+            .map(lab => ({
+              id: lab._id,
+              name: lab.hospitalName,
+              location: lab.address[0].city,
+              image: lab.image[0] || '',
+              taglines: lab.category.map(cat => cat.types)
+            }));
+          setLabsData(formattedData);
+          setFilteredLabs(formattedData);
         }
       } catch (error) {
-        console.error("Error fetching hospital data: ", error);
+        console.error("Error fetching labs data: ", error);
       } finally {
-        setLoading(false); // Set loading to false after data is fetched
+        setLoading(false);
       }
     };
 
-    fetchHospitals();
+    fetchLabs();
   }, []);
 
   useEffect(() => {
@@ -61,13 +61,13 @@ const HospitalList = ({ login, toggleLogin, mobile, setMobile }) => {
   useEffect(() => {
     if (selectedLocation && selectedLocation !== "Current Location") {
       setAreaName(selectedLocation);
-      filterHospitals(selectedLocation);
+      filterLabs(selectedLocation);
     } else if (selectedLocation === "Current Location" && currentLocation) {
       fetchAreaName(currentLocation.latitude, currentLocation.longitude);
     } else {
-      setFilteredHospitals(hospitalsData);
+      setFilteredLabs(labsData);
     }
-  }, [selectedLocation, currentLocation, hospitalsData]);
+  }, [selectedLocation, currentLocation, labsData]);
 
   const fetchAreaName = async (latitude, longitude) => {
     const apiKey = "5938214220714bcc8b8391bf94346dfc"; // Replace with your OpenCage API key
@@ -82,7 +82,7 @@ const HospitalList = ({ login, toggleLogin, mobile, setMobile }) => {
         setAreaName(area);
         setSelectedLocation(area);
         localStorage.setItem("selectedLocation", area);
-        filterHospitals(area);
+        filterLabs(area);
       } else {
         console.error("No results found");
       }
@@ -91,15 +91,16 @@ const HospitalList = ({ login, toggleLogin, mobile, setMobile }) => {
     }
   };
 
-  const filterHospitals = (location) => {
-    const filtered = hospitalsData.filter((hospital) =>
-      hospital.location.toLowerCase().includes(location.toLowerCase())
+  const filterLabs = (location) => {
+    const filtered = labsData.filter((lab) =>
+      lab.location.toLowerCase().includes(location.toLowerCase())
     );
-    setFilteredHospitals(filtered);
+    setFilteredLabs(filtered);
   };
 
-  const handleHospitalClick = (hospitalId) => {
-    navigate(`/hospitaldetail/${hospitalId}`);
+  const handleLabClick = (labId) => {
+    console.log(labId)
+    navigate(`/labdetail/${labId}`);
   };
 
   return (
@@ -109,18 +110,18 @@ const HospitalList = ({ login, toggleLogin, mobile, setMobile }) => {
         <div className="hospital-list-inner">
           {loading ? (
             <div className="loader-container">
-              <div className="loader"></div> {/* Render loader while data is being fetched */}
+              <div className="loader"></div>
             </div>
           ) : (
             <div className="hospital-list-scrollable">
-              {filteredHospitals.length === 0 ? (
+              {filteredLabs.length === 0 ? (
                 <div className="no-hospitals-found">
-                  No hospitals found.
+                  No labs found.
                 </div>
               ) : (
-                filteredHospitals.map((hospital) => (
+                filteredLabs.map((lab) => (
                   <div
-                    key={hospital.id}
+                    key={lab.id}
                     className="hospital-card"
                     onMouseEnter={(e) => {
                       e.currentTarget.style.backgroundColor = "#2BB673";
@@ -128,18 +129,18 @@ const HospitalList = ({ login, toggleLogin, mobile, setMobile }) => {
                     onMouseLeave={(e) => {
                       e.currentTarget.style.backgroundColor = "#D9D9D9";
                     }}
-                    onClick={() => handleHospitalClick(hospital.id)}
+                    onClick={() => handleLabClick(lab.id)}
                   >
-                    {hospital.image && (
+                    {lab.image && (
                       <img
-                        src={hospital.image}
+                        src={lab.image}
                         alt="logo"
                         className="hospital-logo"
                       />
                     )}
                     <div>
-                      <div className="hospital-name">{hospital.name}</div>
-                      <div className="hospital-location">{hospital.location}</div>
+                      <div className="hospital-name">{lab.name}</div>
+                      <div className="hospital-location">{lab.location}</div>
                     </div>
                   </div>
                 ))
@@ -153,4 +154,4 @@ const HospitalList = ({ login, toggleLogin, mobile, setMobile }) => {
   );
 };
 
-export default HospitalList;
+export default LabList;

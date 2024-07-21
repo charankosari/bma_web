@@ -1,16 +1,34 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './Profile.css';
 import Navbar from '../Navbar';
 import Footer from '../Footer';
+import axios from 'axios';
 
 function Profile({ login, toggleLogin, mobile, setMobile }) {
-  const [userDetails, setUserDetails] = useState({
-    email: "john.doe@example.com",
-    mobile: "123-456-7890",
-    name: "John Doe",
-    gender: "Male",
-    birthday: "1990-01-01",
-  });
+  const [userDetails, setUserDetails] = useState('');
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const jwtToken = localStorage.getItem('jwtToken');
+        if (!jwtToken) {
+          throw new Error('JWT token not found in localStorage');
+        }
+  
+        const response = await axios.get('https://server.bookmyappointments.in/api/bma/me', {
+          headers: {
+            Authorization: `Bearer ${jwtToken}`
+          }
+        });
+        setUserDetails(response.data.user);
+        console.log(response.data.user);
+      } catch (error) {
+        console.error('Error fetching user data:', error);
+      }
+    };
+
+    fetchUserData();
+  }, []);
 
   const handleChange = (e) => {
     const { id, value } = e.target;
@@ -40,7 +58,7 @@ function Profile({ login, toggleLogin, mobile, setMobile }) {
             <input
               type="text"
               id="mobile"
-              value={userDetails.mobile}
+              value={userDetails.number}
               onChange={handleChange}
             />
           </div>
@@ -57,9 +75,7 @@ function Profile({ login, toggleLogin, mobile, setMobile }) {
             />
           </div>
           <div className="form-group-birthday">
-            
             <label htmlFor="birthday">Birthday</label>
-           
             <input
               type="date"
               id="birthday"
@@ -70,7 +86,7 @@ function Profile({ login, toggleLogin, mobile, setMobile }) {
           <div className="form-group-gender">
             <label htmlFor="gender">Gender</label>
             <input
-              type="dropdown"
+              type="text" 
               id="gender"
               value={userDetails.gender}
               onChange={handleChange}

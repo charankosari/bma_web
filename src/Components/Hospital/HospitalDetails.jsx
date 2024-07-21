@@ -97,10 +97,10 @@ const navigate = useNavigate()
                 <div>No doctors available at the moment</div>
               ) : (
                 <div className="doctor-list">
-                  {filteredDoctorsList.length === 0 ? (
+                  {doctors.length === 0 ? (
                     <div>No doctors match your search</div>
                   ) : (
-                    filteredDoctorsList.map((doctor) => (
+                    doctors.map((doctor) => (
                       <DoctorCard
                         key={doctor._id}
                         doctor={doctor}

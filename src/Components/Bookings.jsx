@@ -19,9 +19,9 @@ const Bookings = ({ login, toggleLogin, mobile, setMobile }) => {
             'Content-Type': 'application/json',
             Authorization: `Bearer ${jwtToken}`,
           },
-        });
+        }); 
 
-        const responseData = await response.json();
+        const responseData = await response.json(); 
 
         if (response.ok) {
           categorizeBookings(responseData.bookingDetails);
@@ -62,63 +62,64 @@ const Bookings = ({ login, toggleLogin, mobile, setMobile }) => {
       <div className="bookings-container">
         <div className="bookings-content">
           {loading ? (
-            <div className="loading-container">
-              <p>Loading...</p>
+            <div className="loader-container">
+              <div className="loader"></div>
             </div>
           ) : (
             <div className="bookings-grid">
-              {todayBookings.length > 0 && (
+              {todayBookings.length === 0 && upcomingBookings.length === 0 ? (
+                <p className="no-bookings-text">No bookings found.</p>
+              ) : (
                 <>
-                  <h2>Today's Bookings</h2>
-                  {todayBookings.map((item) => (
-                    <div key={item.booking._id} className="booking-card">
-                      <div className="booking-date-time">
-                        <h1 className="booking-title">Booking Date and Time</h1>
-                        <p>{new Date(item.booking.date).toLocaleDateString()}, {item.booking.time}</p>
-                      </div>
-                      <div className="booking-doctor">
-                        <h1>{item.hospital ? item.hospital.hospitalName : 'Hospital Name'}</h1>
-                        <h2>{item.doctor ? item.doctor.name : 'Doctor Name'}</h2>
-                        <p>{item.test ? item.test.name : 'Domain'}</p>
-                      </div>
-                      <div className="booking-details">
-                        <p>Booked on: {new Date(item.booking.date).toLocaleDateString()}</p>
-                        <div className="money">
-                          <p>Paid Amount: ₹{item.booking.amount}</p>
+                  {todayBookings.length > 0 && (
+                    <>
+                      <h2>Today's Bookings</h2>
+                      {todayBookings.map((item) => (
+                        <div key={item.booking._id} className="booking-card">
+                          <div className="booking-date-time">
+                            <h1 className="booking-title">Booking Date and Time</h1>
+                            <p>{new Date(item.booking.date).toLocaleDateString()}, {item.booking.time}</p>
+                          </div>
+                          <div className="booking-doctor">
+                            <h1>{item.hospital ? item.hospital.hospitalName : 'Hospital Name'}</h1>
+                            <h2>{item.doctor ? item.doctor.name : 'Doctor Name'}</h2>
+                            <p>{item.test ? item.test.name : 'Domain'}</p>
+                          </div>
+                          <div className="booking-details">
+                            <p>Booked on: {new Date(item.booking.date).toLocaleDateString()}</p>
+                            <div className="money">
+                              <p>Paid Amount: ₹{item.booking.amount}</p>
+                            </div>
+                          </div>
                         </div>
-                      </div>
-                    </div>
-                  ))}
-                </>
-              )}
-
-              {upcomingBookings.length > 0 && (
-                <>
-                  <h2>Upcoming Bookings</h2>
-                  {upcomingBookings.map((item) => (
-                    <div key={item.booking._id} className="booking-card">
-                      <div className="booking-date-time">
-                        <h1 className="booking-title">Booking Date and Time</h1>
-                        <p>{new Date(item.booking.date).toLocaleDateString()}, {item.booking.time}</p>
-                      </div>
-                      <div className="booking-doctor">
-                        <h1>{item.hospital ? item.hospital.hospitalName : 'Hospital Name'}</h1>
-                        <h2>{item.doctor ? item.doctor.name : 'Doctor Name'}</h2>
-                        <p>{item.test ? item.test.name : 'Domain'}</p>
-                      </div>
-                      <div className="booking-details">
-                        <p>Booked on: {new Date(item.booking.date).toLocaleDateString()}</p>
-                        <div className="money">
-                          <p>Paid Amount: ₹{item.booking.amount}</p>
+                      ))}
+                    </>
+                  )}
+                  {upcomingBookings.length > 0 && (
+                    <>
+                      <h2>Upcoming Bookings</h2>
+                      {upcomingBookings.map((item) => (
+                        <div key={item.booking._id} className="booking-card">
+                          <div className="booking-date-time">
+                            <h1 className="booking-title">Booking Date and Time</h1>
+                            <p>{new Date(item.booking.date).toLocaleDateString()}, {item.booking.time}</p>
+                          </div>
+                          <div className="booking-doctor">
+                            <h1>{item.hospital ? item.hospital.hospitalName : 'Hospital Name'}</h1>
+                            <h2>{item.doctor ? item.doctor.name : 'Doctor Name'}</h2>
+                            <p>{item.test ? item.test.name : 'Domain'}</p>
+                          </div>
+                          <div className="booking-details">
+                            <p>Booked on: {new Date(item.booking.date).toLocaleDateString()}</p>
+                            <div className="money">
+                              <p>Paid Amount: ₹{item.booking.amount}</p>
+                            </div>
+                          </div>
                         </div>
-                      </div>
-                    </div>
-                  ))}
+                      ))}
+                    </>
+                  )}
                 </>
-              )}
-
-              {todayBookings.length === 0 && upcomingBookings.length === 0 && (
-                <p>No bookings found.</p>
               )}
             </div>
           )}

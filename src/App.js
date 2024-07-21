@@ -22,6 +22,8 @@ import LabPage from './Components/Lab';
 import Checkout1 from './Components/Checkout1';
 import BookingConfirmation from './Components/Confirm';
 import Fav from './Components/Fav';
+import LabList from './Components/Lab/LabList';
+import LabDetailsPage from './Components/Lab/LabDetails';
 
 function App() {
   const [mobile, setMobile] = useState(false);
@@ -44,14 +46,17 @@ function App() {
       <Routes>
         <Route path="/" element={<LandingPage login={login} toggleLogin={toggleLogin} mobile={mobile} setMobile={setMobile}/>} />
         <Route path='/fav' element={<Fav login={login} toggleLogin={toggleLogin} mobile={mobile} setMobile={setMobile}/>}/>
-        <Route path="/lab" element={<LabPage login={login} toggleLogin={toggleLogin} mobile={mobile} setMobile={setMobile}/>} />
+        <Route path="/lab" element={<LabList login={login} toggleLogin={toggleLogin} mobile={mobile} setMobile={setMobile}/>} />
         <Route path="/confirm" element={<BookingConfirmation login={login} toggleLogin={toggleLogin} mobile={mobile} setMobile={setMobile}/>} />
 
         <Route path="/profile" element={<Profile login={login} toggleLogin={toggleLogin} mobile={mobile} setMobile={setMobile}/>} />
         <Route path='/book' element={<Bookings login={login} toggleLogin={toggleLogin} mobile={mobile} setMobile={setMobile}/>}/>
         <Route path='/hospital' element={<HospitalList login={login} toggleLogin={toggleLogin} mobile={mobile} setMobile={setMobile}/>}/>
+
         <Route path='/doctor' element={<Doctors login={login} toggleLogin={toggleLogin} mobile={mobile} setMobile={setMobile}/>}/>
-        <Route exact path="/hospitaldetail/:id" element={<HospitalDetailsPage login={login} toggleLogin={toggleLogin} mobile={mobile} setMobile={setMobile}/>} />
+        <Route exact path="/hospitaldetail/:id" element={<HospitalDetailsPage  login={login} toggleLogin={toggleLogin} mobile={mobile} setMobile={setMobile}/>} />
+
+        <Route exact path="/labdetail/:hospitalId" element={<LabDetailsPage login={login} toggleLogin={toggleLogin} mobile={mobile} setMobile={setMobile} />} />
         <Route exact path="/records" element={<Records login={login} toggleLogin={toggleLogin} mobile={mobile} setMobile={setMobile}/>} />
 <Route path='/checkout1' element={<Checkout1 login={login} toggleLogin={toggleLogin} mobile={mobile} setMobile={setMobile}/>}/>
         <Route

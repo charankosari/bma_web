@@ -96,33 +96,37 @@ body {
   left: -5rem; /* Adjust this value to move the dropdown to the left */
   z-index: 1;
   background-color: #333333;
-  border-radius: 5px;
+  padding: 0.5rem 0;
+  border-bottom-left-radius: 5px;
+  border-bottom-right-radius: 5px;
   width: 200px;
 }
+
 .dropdown .location-dropdown {
   display: block;
 }
 
 .location-dropdown p {
-  margin: 15px;
+  display: block; /* Ensure the paragraphs are block-level elements */
+  width: 100%; /* Make them take the full width of the parent */
+  text-align: center; /* Center the text */
+  padding: 10px 0; /* Add padding to ensure equal gap from top and bottom */
+  margin: 0; /* Remove margin to avoid extra spacing */
   font-size: medium;
   cursor: pointer;
-  border-bottom: 1px solid white;
-}
-
-.location-dropdown p {
   color: white;
   text-decoration: none;
-  text-align: center;
+  border-bottom: 1px solid white; /* Add a bottom border to separate options */
 }
 
 .location-dropdown p:last-child {
-  border-bottom: none;
+  border-bottom: none; /* Remove the bottom border for the last option */
 }
 
 .location-dropdown p:hover {
   background-color: #555555;
 }
+
 
 .dropdown-end {
   display: flex;
@@ -147,20 +151,24 @@ body {
 .menu-dropdown {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
+  align-items: center; /* Center the content horizontally */
   position: absolute;
   top: 100%;
   right: 0;
   z-index: 1;
   background-color: #333333;
-  padding: 0.5rem;
-  border-radius: 5px;
-  width: 200px;
+  padding: 0.5rem 0;
+  border-bottom-left-radius: 5px;
+  border-bottom-right-radius: 5px;
+  width: 250px;
 }
 
 .menu-dropdown a,
 .menu-dropdown p {
-  margin: 5px 10px;
+  display: block; /* Ensure the links and paragraphs are block-level elements */
+  width: 100%; /* Make them take the full width of the parent */
+  text-align: center; /* Center the text */
+  padding: 10px 0; /* Add padding to ensure equal gap from top and bottom */
   color: white;
   text-decoration: none;
   cursor: pointer;
@@ -170,6 +178,12 @@ body {
 .menu-dropdown a:hover,
 .menu-dropdown p:hover {
   background-color: #555555;
+}
+
+/* Add a line between each option */
+.menu-dropdown a:not(:last-child),
+.menu-dropdown p:not(:last-child) {
+  border-bottom: 1px solid #555555;
 }
 
 .login-button {
@@ -233,7 +247,7 @@ body {
     font-size: 1.125rem;
   }
   .login-button {
-    background-color: #e91e63;
+    background-color: #2BB673;
     color: white;
     border: none;
     border-radius: 25px;
@@ -311,7 +325,7 @@ body {
   }
 
   .login-button {
-    background-color: #e91e63;
+    background-color: #2BB673;
     color: white;
     border: none;
     border-radius: 25px;

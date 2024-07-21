@@ -14,17 +14,34 @@ const Navbar = ({ login, mobile, setMobile, toggleLogin }) => {
 
   const toggleLocationDropdown = () => {
     setIsLocationDropdownOpen(!isLocationDropdownOpen);
-    if(isAvatarDropdownOpen){
-      setIsAvatarDropdownOpen(!isAvatarDropdownOpen);
+    if (isAvatarDropdownOpen) {
+      setIsAvatarDropdownOpen(false);
     }
   };
 
   const toggleAvatarDropdown = () => {
     setIsAvatarDropdownOpen(!isAvatarDropdownOpen);
-    if(isLocationDropdownOpen){
-      setIsLocationDropdownOpen(!isLocationDropdownOpen);
+    if (isLocationDropdownOpen) {
+      setIsLocationDropdownOpen(false);
     }
   };
+
+  const handleClickOutside = (event) => {
+    if (
+      !event.target.closest(".dropdown") &&
+      !event.target.closest(".dropdown-end")
+    ) {
+      setIsLocationDropdownOpen(false);
+      setIsAvatarDropdownOpen(false);
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener("click", handleClickOutside);
+    return () => {
+      document.removeEventListener("click", handleClickOutside);
+    };
+  }, []);
 
   useEffect(() => {
     const storedLocation = localStorage.getItem("selectedLocation");
@@ -129,24 +146,24 @@ const Navbar = ({ login, mobile, setMobile, toggleLogin }) => {
           >
             <div style={{ display: 'flex', marginRight: '-15px' }}>
               <FaLocationDot className="location-icon" />
-              <div className="location-title" >{selectedLocation || "Select location"}</div>
+              <div className="location-title">{selectedLocation || "Select location"}</div>
               <FaChevronDown className="chevron-icon" />
             </div>
           </div>
           {isLocationDropdownOpen && (
             <div className="location-dropdown">
               <p onClick={handleSelectCurrentLocation}>
-                Select Current Location 
+                Select Current Location
               </p>
               <p onClick={() => handleCitySelect("Gachibowli")}>Gachibowli</p>
               <p onClick={() => handleCitySelect("Banjara Hills")}>
                 Banjara Hills
               </p>
-              <p onClick={() => handleCitySelect("Jubilee Hills")}>
-                Jubilee Hills
+              <p onClick={() => handleCitySelect("Hyderabad")}>
+                Hyderabad
               </p>
-              <p onClick={() => handleCitySelect("Hitech City")}>
-                Hitech City
+              <p onClick={() => handleCitySelect("Dulapally")}>
+                Dulapally
               </p>
               <p onClick={() => handleCitySelect("Secunderabad")}>
                 Secunderabad
@@ -160,7 +177,7 @@ const Navbar = ({ login, mobile, setMobile, toggleLogin }) => {
       </div>
       {login ? (
         <div className="dropdown-end">
-          <div  role="button" className="avatar" onClick={toggleAvatarDropdown}>
+          <div role="button" className="avatar" onClick={toggleAvatarDropdown}>
             <div className="avatar-image">
               <img
                 alt="User Avatar"
@@ -170,10 +187,10 @@ const Navbar = ({ login, mobile, setMobile, toggleLogin }) => {
           </div>
           {isAvatarDropdownOpen && (
             <div className="menu-dropdown">
-              <Link to="/profile" style={{textAlign:'center'}}>Profile</Link>
-              <Link to="/book" style={{textAlign:'center'}}>Bookings</Link>
-              <Link to="/fav" style={{textAlign:'center'}}>Favorites</Link>
-              <Link to="/records" style={{textAlign:'center'}}>Medical Records</Link>
+              <Link to="/profile" style={{ textAlign: 'center' }}>Profile</Link>
+              <Link to="/book" style={{ textAlign: 'center' }}>Bookings</Link>
+              <Link to="/fav" style={{ textAlign: 'center' }}>Favorites</Link>
+              <Link to="/records" style={{ textAlign: 'center' }}>Medical Records</Link>
               <Link>Help</Link>
               <p
                 style={{ color: "red", marginLeft: "10px", marginTop: "8px", marginBottom: '0px' }}

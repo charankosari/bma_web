@@ -23,6 +23,8 @@
   
   .no-hospitals-found {
     text-align: center;
+    margin-top: 10%;
+    font-size: 60px;
     padding: 20px;
   }
   
