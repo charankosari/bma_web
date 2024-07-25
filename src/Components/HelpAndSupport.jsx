@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import "./HelpAndSupport.css"; // Import your CSS file for styles
+import Footer from "./Footer";
 
 const HelpAndSupport = () => {
   const faqs = [
@@ -13,7 +14,6 @@ const HelpAndSupport = () => {
       answer:
         "You cannot cancel your appointment directly. Please contact our customer care team for assistance with cancellations.",
     },
-    // Add more FAQs as needed
   ];
 
   const [activeSections, setActiveSections] = useState([]);
@@ -27,6 +27,7 @@ const HelpAndSupport = () => {
   };
 
   return (
+    <>
     <div className="container">
       <div className="help-and-support">
         <h2 className="header">Help and Support</h2>
@@ -89,6 +90,8 @@ const HelpAndSupport = () => {
         </div>
       </div>
     </div>
+      <Footer/>
+  </>
   );
 };
 

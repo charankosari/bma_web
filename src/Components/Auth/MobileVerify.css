@@ -50,12 +50,12 @@
 }
 
 .mobile-verify input:focus, .signup input:focus {
-  border-bottom: 2px solid #4CAF50;
+  border-bottom: 2px solid #2BB673;
 }
 
 .mobile-verify button, .signup button {
   padding: 10px 20px;
-  background: #4CAF50;
+  background: #2BB673;
   color: white;
   border: none;
   border-radius: 4px;
@@ -76,7 +76,7 @@
 }
 
 .signup-link {
-  color: #4CAF50;
+  color: #2BB673;
   text-decoration: none;
   cursor: pointer;
 }

@@ -1,16 +1,67 @@
-import { FaChevronDown, FaSearch } from "react-icons/fa";
-import logo from "../Assets/logo.png";
-import { FaLocationDot } from "react-icons/fa6";
-import { Link } from "react-router-dom";
-import "./Navbar.css"; // Import the CSS file
-import { useEffect, useState } from "react";
+import React, { useState, useEffect } from 'react';
+import { FaChevronDown, FaSearch } from 'react-icons/fa';
+import { FaLocationDot } from 'react-icons/fa6';
+import { Link } from 'react-router-dom';
+import Avatar from 'react-avatar';
+import logo from '../Assets/logo.png';
+import './Navbar.css';
 
-const Navbar = ({ login, mobile, setMobile, toggleLogin }) => {
+const Navbar = ({ mobile, setMobile, toggleLogin, searchQuery, setSearchQuery, selectedLocation, setSelectedLocation }) => {
   const [currentLocation, setCurrentLocation] = useState(null);
-  const [areaName, setAreaName] = useState("");
-  const [selectedLocation, setSelectedLocation] = useState("");
+  const [areaName, setAreaName] = useState('');
   const [isLocationDropdownOpen, setIsLocationDropdownOpen] = useState(false);
   const [isAvatarDropdownOpen, setIsAvatarDropdownOpen] = useState(false);
+  const [login, setLogin] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    const storedLocation = localStorage.getItem('selectedLocation');
+    if (storedLocation && storedLocation !== 'Current Location') {
+      setSelectedLocation(storedLocation);
+      setAreaName(storedLocation);
+    } else {
+      setSelectedLocation('Select location');
+    }
+
+    const token = localStorage.getItem('jwtToken');
+    if (token) {
+      setLogin(true);
+    }
+
+    handleSelectCurrentLocation();
+  }, []);
+
+  useEffect(() => {
+    if (selectedLocation && selectedLocation !== 'Select location') {
+      setAreaName(selectedLocation);
+    } else if (selectedLocation === 'Current Location' && currentLocation) {
+      fetchAreaName(currentLocation.latitude, currentLocation.longitude);
+    }
+  }, [selectedLocation, currentLocation]);
+
+  useEffect(() => {
+  }, [searchQuery]);
+
+  const handleClickOutside = (event) => {
+    if (
+      !event.target.closest('.dropdown') &&
+      !event.target.closest('.dropdown-end')
+    ) {
+      setIsLocationDropdownOpen(false);
+      setIsAvatarDropdownOpen(false);
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener('click', handleClickOutside);
+    return () => {
+      document.removeEventListener('click', handleClickOutside);
+    };
+  }, []);
+
+  const handleVerify = () => {
+    setMobile(!mobile);
+  };
 
   const toggleLocationDropdown = () => {
     setIsLocationDropdownOpen(!isLocationDropdownOpen);
@@ -26,116 +77,88 @@ const Navbar = ({ login, mobile, setMobile, toggleLogin }) => {
     }
   };
 
-  const handleClickOutside = (event) => {
-    if (
-      !event.target.closest(".dropdown") &&
-      !event.target.closest(".dropdown-end")
-    ) {
-      setIsLocationDropdownOpen(false);
-      setIsAvatarDropdownOpen(false);
-    }
-  };
-
-  useEffect(() => {
-    document.addEventListener("click", handleClickOutside);
-    return () => {
-      document.removeEventListener("click", handleClickOutside);
-    };
-  }, []);
-
-  useEffect(() => {
-    const storedLocation = localStorage.getItem("selectedLocation");
-    if (storedLocation && storedLocation !== "Current Location") {
-      setSelectedLocation(storedLocation);
-      setAreaName(storedLocation);
-    } else {
-      setSelectedLocation("Select location");
-    }
-  }, []);
-
-  useEffect(() => {
-    if (
-      selectedLocation &&
-      selectedLocation !== "Select location" &&
-      selectedLocation !== "Current Location"
-    ) {
-      setAreaName(selectedLocation);
-    } else if (selectedLocation === "Current Location" && currentLocation) {
-      fetchAreaName(currentLocation.latitude, currentLocation.longitude);
-    }
-  }, [selectedLocation, currentLocation]);
-
-  const handleVerify = () => {
-    setMobile(!mobile);
-  };
-
   const handleSelectCurrentLocation = () => {
     if (navigator.geolocation) {
+      setLoading(true);
       navigator.geolocation.getCurrentPosition(
         (position) => {
           const { latitude, longitude } = position.coords;
           setCurrentLocation({ latitude, longitude });
-          console.log("Current Location: ", { latitude, longitude });
           fetchAreaName(latitude, longitude);
-          // Set selected location and store it in local storage
-          setSelectedLocation("Current Location");
-          localStorage.setItem("selectedLocation", "Current Location");
-          // Close the dropdown
+          setSelectedLocation('Current Location');
+          localStorage.setItem('selectedLocation', 'Current Location');
           setIsLocationDropdownOpen(false);
         },
         (error) => {
-          console.error("Error getting location: ", error);
+          console.error('Error getting location: ', error);
+          setLoading(false);
         }
       );
     } else {
-      alert("Geolocation is not supported by this browser.");
+      alert('Geolocation is not supported by this browser.');
+      setLoading(false);
     }
   };
 
   const fetchAreaName = async (latitude, longitude) => {
-    const apiKey = "5938214220714bcc8b8391bf94346dfc"; // Replace with your OpenCage API key
-    const url = `https://api.opencagedata.com/geocode/v1/json?q=${latitude}+${longitude}&key=${apiKey}`;
+    const url = `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=en`;
 
     try {
       const response = await fetch(url);
       const data = await response.json();
-      if (data.results && data.results.length > 0) {
-        const components = data.results[0].components;
-        const area =
-          components.neighbourhood ||
-          components.suburb ||
-          components.village ||
-          "Unknown";
-        // Update area name
-        setAreaName(area);
-        // Update selected location and store it in local storage
-        setSelectedLocation(area);
-        localStorage.setItem("AreaName", area);
+      if (data && data.locality) {
+        const locality = data.locality;
+        setAreaName(locality);
+        setSelectedLocation(locality);
+        localStorage.setItem('selectedLocation', locality);
       } else {
-        console.error("No results found");
+        console.error('Locality not found');
       }
     } catch (error) {
-      console.error("Error fetching area name: ", error);
+      console.error('Error fetching area name: ', error);
+    } finally {
+      setLoading(false);
     }
   };
 
   const handleCitySelect = (city) => {
     setAreaName(city);
-    setSelectedLocation(city); // Set selected location
-    localStorage.setItem("selectedLocation", city); // Store in local storage
-    // Close the dropdown
+    setSelectedLocation(city);
+    localStorage.setItem('selectedLocation', city);
     setIsLocationDropdownOpen(false);
+  };
+
+  const handleNoneSelect = () => {
+    setAreaName('');
+    setSelectedLocation('Select location');
+    localStorage.removeItem('selectedLocation');
+    setIsLocationDropdownOpen(false);
+  };
+
+  const handleSearchChange = (event) => {
+    setSearchQuery(event.target.value);
+  };
+
+  const handleSearchSubmit = () => {
+    console.log('Search query: ', searchQuery);
   };
 
   return (
     <div className="navbar">
       <div className="navbar-content">
         <Link to="/">
-          <img src={logo} alt="Logo" className="logo" />
+          <img src={logo} alt="Logo" className="logo" style={{ height: '40px', width: 'auto' }} />
         </Link>
         <div className="search-container">
           <FaSearch className="search-icon" />
-          <input type="text" placeholder="Search" className="search-input" />
+          <input
+            type="text"
+            placeholder="Search"
+            className="search-input"
+            value={searchQuery}
+            onChange={handleSearchChange}
+            onKeyDown={(e) => e.key === 'Enter' && handleSearchSubmit()} // Trigger search on Enter key press
+          />
         </div>
         <div className="dropdown">
           <div
@@ -146,31 +169,22 @@ const Navbar = ({ login, mobile, setMobile, toggleLogin }) => {
           >
             <div style={{ display: 'flex', marginRight: '-15px' }}>
               <FaLocationDot className="location-icon" />
-              <div className="location-title">{selectedLocation || "Select location"}</div>
+              <div className="location-title">{selectedLocation || 'Select location'}</div>
               <FaChevronDown className="chevron-icon" />
             </div>
           </div>
           {isLocationDropdownOpen && (
             <div className="location-dropdown">
               <p onClick={handleSelectCurrentLocation}>
-                Select Current Location
+                {loading ? 'Loading...' : 'Select Current Location'}
               </p>
-              <p onClick={() => handleCitySelect("Gachibowli")}>Gachibowli</p>
-              <p onClick={() => handleCitySelect("Banjara Hills")}>
-                Banjara Hills
-              </p>
-              <p onClick={() => handleCitySelect("Hyderabad")}>
-                Hyderabad
-              </p>
-              <p onClick={() => handleCitySelect("Dulapally")}>
-                Dulapally
-              </p>
-              <p onClick={() => handleCitySelect("Secunderabad")}>
-                Secunderabad
-              </p>
-              <p onClick={() => handleCitySelect("Doolapally")}>
-                Doolapally
-              </p>
+              <p onClick={handleNoneSelect}>None</p>
+              <p onClick={() => handleCitySelect('Gachibowli')}>Gachibowli</p>
+              <p onClick={() => handleCitySelect('Banjara Hills')}>Banjara Hills</p>
+              <p onClick={() => handleCitySelect('Hyderabad')}>Hyderabad</p>
+              <p onClick={() => handleCitySelect('Dulapally')}>Dulapally</p>
+              <p onClick={() => handleCitySelect('Secunderabad')}>Secunderabad</p>
+              <p onClick={() => handleCitySelect('Doolapally')}>Doolapally</p>
             </div>
           )}
         </div>
@@ -178,23 +192,22 @@ const Navbar = ({ login, mobile, setMobile, toggleLogin }) => {
       {login ? (
         <div className="dropdown-end">
           <div role="button" className="avatar" onClick={toggleAvatarDropdown}>
-            <div className="avatar-image">
-              <img
-                alt="User Avatar"
-                src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg"
-              />
-            </div>
+            <Avatar name="User" round={true} size="40" />
           </div>
           {isAvatarDropdownOpen && (
             <div className="menu-dropdown">
               <Link to="/profile" style={{ textAlign: 'center' }}>Profile</Link>
-              <Link to="/book" style={{ textAlign: 'center' }}>Bookings</Link>
+              <Link to="/bookings" style={{ textAlign: 'center' }}>Bookings</Link>
               <Link to="/fav" style={{ textAlign: 'center' }}>Favorites</Link>
               <Link to="/records" style={{ textAlign: 'center' }}>Medical Records</Link>
               <Link>Help</Link>
               <p
-                style={{ color: "red", marginLeft: "10px", marginTop: "8px", marginBottom: '0px' }}
-                onClick={toggleLogin}
+                style={{ color: 'red', marginLeft: '10px', marginTop: '8px', marginBottom: '0px' }}
+                onClick={() => {
+                  localStorage.removeItem('jwtToken');
+                  setLogin(false);
+                  toggleLogin();
+                }}
               >
                 Sign Out
               </p>

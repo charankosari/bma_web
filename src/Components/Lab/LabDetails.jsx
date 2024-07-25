@@ -1,154 +1,254 @@
-import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import './LabDetails.css';
-import Navbar from '../Navbar';
-import Footer from '../Footer';
+import React, { useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
+import {
+  Box,
+  Typography,
+  CircularProgress,
+  Container,
+  Card,
+  CardContent,
+  Grid,
+  IconButton,
+  useTheme,
+  useMediaQuery,
+  CardMedia,
+} from "@mui/material";
+import FavoriteIcon from "@mui/icons-material/Favorite";
+import Footer from "../Footer";
+import moment from "moment";
+import testimg from '../../Assets/image1.png';
 
-const LabDetailsPage = ({ login, toggleLogin, mobile, setMobile }) => {
-  const { hospitalId } = useParams();
-  const history = useNavigate();
+const HospitalDetailsPage = ({ login, toggleLogin, mobile, setMobile, searchQuery }) => {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const hospital = location.state || {};  
   const [tests, setTests] = useState([]);
+  const [filteredTests, setFilteredTests] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [isFavorite, setIsFavorite] = useState({});
-  const [favoriteLoading, setFavoriteLoading] = useState(false);
-  
+  const [favorites, setFavorites] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState(null);
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   useEffect(() => {
-    const fetchTests = async () => {
+    if (hospital.id) {
+      const fetchHospitalDetails = async () => {
+        try {
+          const testRequests = hospital.tests?.map(test =>
+            fetch(`https://server.bookmyappointments.in/api/bma/tests/${test.testid}`)
+          ) || [];
+          const testResponses = await Promise.all(testRequests);
+          const testData = await Promise.all(testResponses.map(res => res.json()));
+          const allTests = testData.map(data => data.test);
+          setTests(allTests);
+          setLoading(false);
+        } catch (error) {
+          console.error("Error fetching test details:", error);
+          setLoading(false);
+        }
+      };
+
+      fetchHospitalDetails();
+    }
+  }, [hospital]);
+  useEffect(() => {
+    
+    const filtered = tests.filter((test) =>
+      test.name.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+    
+    if (selectedCategory) {
+      const categoryFiltered = filtered.filter((test) =>
+        test.name.toLowerCase() === selectedCategory.toLowerCase()
+      );
+      setFilteredTests(categoryFiltered);
+    } else {
+      setFilteredTests(filtered);
+    }
+  }, [searchQuery, tests, selectedCategory]);
+  
+  
+  useEffect(() => {
+    const fetchFavorites = async () => {
       try {
-        const response = await fetch(`https://server.bookmyappointments.in/api/bma/user/labs/${hospitalId}`, {
-          method: 'GET',
+        const response = await fetch("https://server.bookmyappointments.in/api/bma/me", {
           headers: {
-            'Content-Type': 'application/json',
+            Authorization: `Bearer ${localStorage.getItem("jwtToken")}`,
           },
         });
-
-        const responseData = await response.json();
-
-        if (response.ok) {
-          setTests(responseData.hospital.tests);
-          const wishlist = await fetchWishlist();
-          const favoriteTests = wishlist.data.tests.reduce((acc, test) => {
-            acc[test._id] = true;
-            return acc;
-          }, {});
-          setIsFavorite(favoriteTests);
-        } else {
-          alert('Error: ' + responseData.message);
-        }
+        const data = await response.json();
+        setFavorites(data.wishList || []);
       } catch (error) {
-        console.error('Error fetching tests:', error);
-        alert('Error: An error occurred while fetching tests.');
-      } finally {
-        setLoading(false);
+        console.error("Error fetching favorites:", error);
       }
     };
 
-    const fetchWishlist = async () => {
-      try {
-        const token = localStorage.getItem('jwtToken');
-        if (!token) {
-          console.log('No token found');
-          return { data: { tests: [] } };
-        }
+    fetchFavorites();
+  }, []);
 
-        const response = await fetch('https://server.bookmyappointments.in/api/bma/me/wishlist', {
-          method: 'GET',
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
-        });
-
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
-        }
-
-        return await response.json();
-      } catch (error) {
-        console.error('Error fetching wishlist:', error);
-        return { data: { tests: [] } };
-      }
-    };
-
-    fetchTests();
-  }, [hospitalId]);
-
-  const handleFavouritePress = async (test) => {
-    try {
-      setFavoriteLoading(true);
-      const jwtToken = localStorage.getItem('jwtToken');
-      const response = await fetch(`https://server.bookmyappointments.in/api/bma/me/wishlist`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${jwtToken}`,
-        },
-        body: JSON.stringify({
-          type: 'test',
-          testId: test._id,
-        }),
-      });
-
-      const responseData = await response.json();
-
-      if (response.ok) {
-        alert('Success: ' + responseData.message);
-        setIsFavorite(prev => ({ ...prev, [test._id]: !prev[test._id] }));
-      } else {
-        alert('Error: ' + responseData.message);
-      }
-    } catch (error) {
-      console.error('Error adding test to favorites:', error);
-      alert('Error: An error occurred while adding to favorites.');
-    } finally {
-      setFavoriteLoading(false);
-    }
+  const hasFutureBookings = (bookingids) => {
+    const today = moment().startOf("day");
+    return Object.keys(bookingids || {}).some((date) =>
+      moment(date, "DD-MM-YYYY").isSameOrAfter(today)
+    );
   };
 
-  const handleBookNow = (test) => {
-    history.push({
-      pathname: '/detailed-lab-booking',
+  const filteredTestsList = filteredTests.filter(
+    (test) =>
+      hasFutureBookings(test.bookingsids || {})
+  );
+
+  const handleTestCardClick = (test) => {
+    navigate(`/test/${test._id}`, {
       state: {
-        testDetails: test,
-        hospitalId: hospitalId,
+        test,
+        hospital,
       },
     });
   };
 
-  if (loading) {
-    return <div className="loading">Loading...</div>;
-  }
-
-  console.log(tests)
   return (
-    <div>      <Navbar login={login} mobile={mobile} setMobile={setMobile} />
-
-    <div className="lab-details-page">
-      {tests.map(test => (
-        <div key={test._id} className="test-card">
-          <div className="test-card-content">
-            <img src={test.image} alt={test.name} className="test-image" />
-            <div className="test-info">
-              <div className="test-header">
-                <h3 className="test-name">{test.name}</h3>
-                <h4 className="test-price">{`$${test.price.consultancyfee}`}</h4>
-              </div>
-              <button
-                className="test-heart"
-                onClick={() => handleFavouritePress(test)}
-                disabled={favoriteLoading}
-              >
-                {favoriteLoading ? 'Loading...' : (isFavorite[test._id] ? '❤️' : '🤍')}
-              </button>
-            </div>
-          </div>
-          
-        </div>
-      ))}
-    </div>
-    <Footer/>
-    </div>
+    <Box
+      sx={{
+        minHeight: isMobile ? "50vh" : "90vh",
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "space-between",
+      }}
+    >
+      <Container maxWidth="2xl">
+        <Box sx={{ pt: 8, pb: 6 }}>
+          {loading ? (
+            <Box display="flex" justifyContent="center">
+              <CircularProgress />
+            </Box>
+          ) : (
+            hospital && (
+              <>
+                <Box sx={{ textAlign: "center", mb: 4 }}>
+                  <Typography variant="h4" component="h1" gutterBottom>
+                    {hospital.name?.charAt(0).toUpperCase() + hospital.name?.slice(1)}
+                  </Typography>
+                </Box>
+                <Box
+                  sx={{
+                    overflowX: 'auto',
+                    whiteSpace: 'nowrap',
+                    mb: 4,
+                    display: 'flex',
+                    gap: 2,
+                    padding: 1,
+                  }}
+                >
+                  {hospital.taglines?.map((tagline, index) => (
+                    <Box
+                      key={index}
+                      sx={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        padding: 1, 
+                        cursor: 'pointer',
+                        border: '1px solid',
+                        borderRadius: 1,
+                        textAlign: 'center',
+                        alignItems: 'center' ,
+                        justifyContent: 'center',
+                        backgroundColor: selectedCategory === tagline ? '#e0f7fa' : '#fff',
+                        borderColor: selectedCategory === tagline ? '#00bcd4' : '#ccc',
+                        width: 100, 
+                      }}
+                      onClick={() => setSelectedCategory(tagline)}
+                    >
+                      <CardMedia
+                        component="img"
+                        sx={{
+                          width: 50, 
+                          height: 50, 
+                          objectFit: 'cover',
+                          borderRadius: '5px',
+                        }}
+                        image={testimg}
+                        alt={tagline}
+                      />
+                      <Typography variant="body2" sx={{ mt: 0.5 }}> 
+                        {tagline}
+                      </Typography>
+                    </Box>
+                  ))}
+                </Box>
+                {filteredTestsList.length === 0 ? (
+                  <Typography variant="h6" color="textSecondary" align="center">
+                    No tests match your search.
+                  </Typography>
+                ) : (
+                  <Grid container spacing={2}>
+                    {filteredTestsList.map((test) => (
+                      <Grid item key={test._id} xs={12}>
+                        <Card
+                          sx={{
+                            display: "flex",
+                            alignItems: "center",
+                            padding: isMobile ? 1 : 2,
+                            '&:hover': {
+                              cursor: 'pointer',
+                              backgroundColor: '#2BB673',
+                            }
+                          }}
+                          onClick={() => handleTestCardClick(test)}
+                        >
+                          {test.image?.length > 0 ? (
+                            <CardMedia
+                              component="img"
+                              sx={{
+                                width: isMobile ? 80 : 100,
+                                height: isMobile ? 80 : 100,
+                                borderRadius: "5px"
+                              }}
+                              image={test.image[0]}
+                              alt={test.name}
+                            />
+                          ) : (
+                            <Box
+                              sx={{
+                                width: isMobile ? 80 : 100,
+                                height: isMobile ? 80 : 100,
+                                borderRadius: "50%",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                backgroundColor: "#e0e0e0",
+                                fontSize: 40,
+                              }}
+                            >
+                              {test.name?.charAt(0)}
+                            </Box>
+                          )}
+                          <CardContent sx={{ flexGrow: 1, marginLeft: 2 }}>
+                            <Typography variant="h6" component="div">
+                              {test.name}
+                            </Typography>
+                            <Typography variant="body2" color="textSecondary">
+                              {test.price ? `Consultancy Fee: ${test.price.consultancyfee}, Service Fee: ${test.price.servicefee}` : "No price information available"}
+                            </Typography>
+                          </CardContent>
+                          {favorites?.includes(test._id) && (
+                            <IconButton color="secondary">
+                              <FavoriteIcon />
+                            </IconButton>
+                          )}
+                        </Card>
+                      </Grid>
+                    ))}   
+                  </Grid>
+                )}
+              </>
+            )
+          )}
+        </Box>
+      </Container>
+      <Footer />
+    </Box>
   );
 };
 
-export default LabDetailsPage;
+export default HospitalDetailsPage;

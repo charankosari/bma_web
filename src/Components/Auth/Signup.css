@@ -44,12 +44,13 @@
 }
 
 .signup input:focus {
-    border-bottom: 2px solid #4CAF50;
+    border-bottom: 2px solid #2BB673;
 }
+
 
 .signup button {
     padding: 10px 20px;
-    background: #4CAF50;
+    background: #2BB673;
     color: white;
     border: none;
     border-radius: 10px;

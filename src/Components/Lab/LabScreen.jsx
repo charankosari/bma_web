@@ -1,0 +1,438 @@
+import React, { useState, useEffect } from "react";
+import {
+  Box,
+  Typography,
+  Card,
+  CardContent,
+  CardMedia,
+  Button,
+  CircularProgress,
+  IconButton,
+  Snackbar,
+  useTheme,
+  Alert,
+  useMediaQuery,
+} from "@mui/material";
+import FavoriteIcon from "@mui/icons-material/Favorite";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
+import moment from "moment";
+import Footer from "../Footer";
+import { AccessTime as AccessTimeIcon, Cancel as CancelIcon } from '@mui/icons-material';
+
+const LabScreen = () => {
+  const { id } = useParams();
+  const location = useLocation();
+  const navigate = useNavigate();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+
+  const [test, setTest] = useState(null);
+  const [hospital, setHospital] = useState(null);
+  const [userDetails, setUserDetails] = useState(null);
+  const [isFavorite, setIsFavorite] = useState(false);
+  const [selectedDate, setSelectedDate] = useState(null);
+  const [selectedTime, setSelectedTime] = useState(null);
+  const [dates, setDates] = useState([]);
+  const [times, setTimes] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+
+  useEffect(() => {
+    const fetchTestDetails = async () => {
+      try {
+        const jwtToken = localStorage.getItem("jwtToken");
+        const response = await fetch(`https://server.bookmyappointments.in/api/bma/getsinglelab/${id}`, {
+          headers: {
+            Authorization: `Bearer ${jwtToken}`,
+          },
+        });
+        
+        if (!response.ok) {
+          throw new Error("Failed to fetch test details");
+        }
+        
+        const data = await response.json();
+        const test = data.lab;
+        
+        setTest(test);
+        setHospital(location.state.hospital);
+        const currentTime = moment();
+        const filteredDates = Object.keys(test.bookingsids).filter((date) => {
+          const dateMoment = moment(date, "DD-MM-YYYY");
+          const availableTimes = [
+            ...test.bookingsids[date].morning,
+            ...test.bookingsids[date].evening,
+          ].filter((slot) => {
+            const slotTime = moment(slot.time, "HH:mm");
+            const slotDateTime = moment(dateMoment).set({
+              hour: slotTime.hour(),
+              minute: slotTime.minute(),
+            });
+            return slotDateTime.isAfter(currentTime);
+          });
+          return availableTimes.length > 0;
+        });
+
+        setDates(filteredDates);
+      } catch (error) {
+        console.error("Error fetching test details:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchTestDetails();
+  }, [id, location.state.hospital]); 
+
+  useEffect(() => {
+    const fetchUserDetails = async () => {
+      try {
+        const response = await fetch(
+          "https://server.bookmyappointments.in/api/bma/me",
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("jwtToken")}`,
+            },
+          }
+        );
+        const data = await response.json();
+        setUserDetails(data.user);
+      } catch (error) {
+        console.error("Error fetching user details:", error);
+      }
+    };
+
+    const fetchFavoriteStatus = async () => {
+      try {
+        const response = await fetch(
+          "https://server.bookmyappointments.in/api/bma/me",
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("jwtToken")}`,
+            },
+          }
+        );
+        if (response.ok) {
+          const data = await response.json();
+          const wishList = data.user.wishList;
+          const testIds = wishList.map((item) => item.test);
+          const isWishlisted = testIds.includes(test.id);
+          setIsFavorite(isWishlisted);
+        } else {
+          console.error("Failed to fetch user details");
+        }
+      } catch (error) {
+        console.error("Error checking favorite status:", error);
+      }
+    };
+
+    if (test) {
+      fetchUserDetails();
+      fetchFavoriteStatus();
+    }
+  }, [test]);
+
+  const handleDateSelect = (date) => {
+    setSelectedDate(date);
+
+    const currentTime = moment();
+    const selectedDateMoment = moment(date, "DD-MM-YYYY");
+
+    const availableTimes = [
+      ...test.bookingsids[date].morning.map((slot) => ({
+        ...slot,
+        session: "morning",
+      })),
+      ...test.bookingsids[date].evening.map((slot) => ({
+        ...slot,
+        session: "evening",
+      })),
+    ].filter((slot) => {
+      const slotTime = moment(slot.time, "HH:mm");
+      const slotDateTime = moment(selectedDateMoment).set({
+        hour: slotTime.hour(),
+        minute: slotTime.minute(),
+      });
+
+      return slotDateTime.isAfter(currentTime);
+    });
+
+    setTimes(availableTimes);
+  };
+
+  const toggleFavorite = async () => {
+    try {
+      const response = await fetch(
+        `https://server.bookmyappointments.in/api/bma/me/wishlist/${test.id}`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("jwtToken")}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ type: "test" }),
+        }
+      );
+      if (response.ok) {
+        const message = isFavorite
+          ? "Removed from favorites"
+          : "Added to favorites";
+        setSnackbarMessage(message);
+        setIsFavorite(!isFavorite);
+      }
+    } catch (error) {
+      console.error("Error toggling favorite:", error);
+    }
+  };
+
+  const handleBookNow = async () => {
+    if (!selectedDate || !selectedTime) {
+      alert("Please select a date and time.");
+      return;
+    }
+
+    const selectedSlot = test.bookingsids[selectedDate].morning
+      .concat(test.bookingsids[selectedDate].evening)
+      .find(
+        (slot) =>
+          slot.session === selectedTime.session && slot.time === selectedTime.time
+      );
+
+    if (selectedSlot && selectedSlot.booked) {
+      alert("The selected time slot is already booked. Please choose another slot.");
+      return;
+    }
+
+    const bookingData = {
+      testId: test.id,
+      hospitalId: hospital._id,
+      date: moment(selectedDate, 'DD-MM-YYYY').format('YYYY-MM-DD'),
+      time: selectedTime.time,
+      session: selectedTime.session,
+      name: userDetails.name,
+      phonenumber: userDetails.number,
+      email: userDetails.email,
+      amountpaid: test.price.consultancyfee + test.price.servicefee,
+    };
+    navigate('/labbooking', { state: { bookingData, hospital, test } });
+  };
+
+  if (loading) {
+    return (
+      <Box
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+        height="100vh"
+      >
+        <CircularProgress />
+      </Box>
+    );
+  }
+
+  return (
+    <>
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          width: "100%",
+          height: isMobile ? "100%" : "70vh",
+          padding: isMobile ? 2 : 4,
+        }}
+      >
+        {test && (
+          <>
+            <Card
+              sx={{
+                display: "flex",
+                flexDirection: isMobile ? "column" : "row",
+                alignItems: "center",
+                width: "100%",
+                mb: 2,
+                padding: 3,
+                boxShadow: 3,
+                gap: isMobile ? 0 : "50px",
+                position: "relative",
+                height: "auto",
+              }}
+            >
+              {test.image ? (
+                <CardMedia
+                  component="img"
+                  sx={{
+                    width: isMobile ? "100%" : 180,
+                    height: isMobile ? "auto" : 180,
+                    borderRadius: "10px",
+                    objectFit: "contain",
+                    mb: isMobile ? 2 : 0,
+                    mt: isMobile ? 4 : 0,
+                  }}
+                  image={test.image}
+                  alt={test.name}
+                />
+              ) : (
+                <Box
+                  sx={{
+                    width: isMobile ? "100%" : 180,
+                    height: isMobile ? 120 : 180,
+                    borderRadius: "50%",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    backgroundColor: "#e0e0e0",
+                    fontSize: isMobile ? 40 : 60,
+                    mb: isMobile ? 2 : 0,
+                  }}
+                >
+                  {test.name.charAt(0)}
+                </Box>
+              )}
+              <Box
+                sx={{
+                  flex: 1,
+                  marginLeft: isMobile ? 0 : 2,
+                  textAlign: isMobile ? "center" : "left",
+                }}
+              >
+                <CardContent>
+                  <Typography variant="h5" gutterBottom>
+                    {test.name}
+                  </Typography>
+                  <Typography variant="subtitle1" color="textSecondary">
+                    Hospital: {hospital.hospitalName}
+                  </Typography>
+                  <Typography variant="subtitle1" color="textSecondary">
+                    Consultancy Fee: ${test.price.consultancyfee}
+                  </Typography>
+                  <Typography variant="subtitle1" color="textSecondary">
+                    Service Fee: ${test.price.servicefee}
+                  </Typography>
+                  <Typography variant="subtitle1" color="textSecondary">
+                    Total Fee: $
+                    {test.price.consultancyfee + test.price.servicefee}
+                  </Typography>
+                </CardContent>
+              </Box>
+              <IconButton
+                onClick={toggleFavorite}
+                sx={{
+                  position: "absolute",
+                  top: 8,
+                  right: 8,
+                  backgroundColor: "rgba(255,255,255,0.8)",
+                  borderRadius: "50%",
+                  boxShadow: "0px 2px 4px rgba(0,0,0,0.1)",
+                  "&:hover": {
+                    backgroundColor: "rgba(255,255,255,1)",
+                  },
+                }}
+              >
+                <FavoriteIcon
+                  color={isFavorite ? "error" : "disabled"}
+                  fontSize="large"
+                />
+              </IconButton>
+            </Card>
+          </>
+        )}
+
+        <Box sx={{ width: "100%", mb: 4 }}>
+          <Typography
+            variant="h6"
+            sx={{ marginBottom: 2 }}
+            color="text.secondary"
+          >
+            Select a Date
+          </Typography>
+          <Box sx={{ display: "flex", flexWrap: "wrap", gap: 2 }}>
+            {dates.map((date) => (
+             <Button
+             key={date}
+             sx={{
+               backgroundColor: selectedDate === date ? "#2BB673" : "white",
+               color: selectedDate === date ? "white" : "#2BB673",
+               "&:hover": {
+                 backgroundColor: selectedDate === date ? "#239c5f" : "#f0f0f0",
+                 color: selectedDate === date ? "white" : "#2BB673",
+               },
+             }}
+             variant={selectedDate === date ? "contained" : "outlined"}
+             color="primary"
+             onClick={() => handleDateSelect(date)}
+           >
+             {date}
+           </Button>
+           
+            ))}
+          </Box>
+        </Box>
+
+        {selectedDate && times.length > 0 && (
+          <Box sx={{ width: "100%", mb: 4 }}>
+            <Typography
+              variant="h6"
+              sx={{ marginBottom: 2 }}
+              color="text.secondary"
+            >
+              Select a Time
+            </Typography>
+            <Box sx={{ display: "flex", flexWrap: "wrap", gap: 2 }}>
+              {times.map((slot) => (
+              <Button
+              key={slot.time}
+              sx={{
+                backgroundColor: selectedTime === slot ? "#2BB673" : "white",
+                color: selectedTime === slot ? "white" : "#2BB673",
+                "&:hover": {
+                  backgroundColor: selectedTime === slot ? "#239c5f" : "#f0f0f0",
+                  color: selectedTime === slot ? "white" : "#2BB673",
+                },
+              }}
+              variant={selectedTime === slot ? "contained" : "outlined"}
+              color="primary"
+              onClick={() => setSelectedTime(slot)}
+              disabled={slot.booked}
+              startIcon={slot.booked ? <CancelIcon /> : <AccessTimeIcon />}
+            >
+              {slot.time} {slot.booked ? "(Booked)" : ""}
+            </Button>
+            
+              ))}
+            </Box>
+          </Box>
+        )}
+
+        {selectedDate && selectedTime && (
+        <Button
+        variant="contained"
+        onClick={handleBookNow}
+        sx={{
+          mt: 2,
+          width: "250px",
+          backgroundColor: "#2BB673",
+          "&:hover": {
+            backgroundColor: "#239c5f",
+          },
+        }}
+      >
+        Book Now
+      </Button>
+        )}
+      </Box>
+
+      <Footer />
+
+      <Snackbar
+        open={!!snackbarMessage}
+        autoHideDuration={3000}
+        onClose={() => setSnackbarMessage("")}
+      >
+        <Alert severity="success">{snackbarMessage}</Alert>
+      </Snackbar>
+    </>
+  );
+};
+
+export default LabScreen;

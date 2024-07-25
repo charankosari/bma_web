@@ -32,7 +32,7 @@ body {
 
 .search-container {
   position: relative;
-  width: 100%;
+  width: 90%;
   flex: 1;
 }
 
@@ -48,7 +48,7 @@ body {
 .search-input {
   height: 2.5rem;
   padding-left: 2.5rem;
-  width: 100%;
+  width: 90%;
   background-color: white;
   color: black;
   border: none;
@@ -93,7 +93,7 @@ body {
   display: none;
   position: absolute;
   top: 6vh;
-  left: -5rem; /* Adjust this value to move the dropdown to the left */
+  left: -100%; /* Adjust this value to move the dropdown to the left */
   z-index: 1;
   background-color: #333333;
   padding: 0.5rem 0;
@@ -230,9 +230,9 @@ body {
     text-align: center;
   }
 
-  .location-dropdown {
+  .location-dropdown {  
     width: 200px;
-    left: 0;
+    left: -50%;
   }
   .dropdown .btn .location-icon {
     font-size: 1.25rem;
