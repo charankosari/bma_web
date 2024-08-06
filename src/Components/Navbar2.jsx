@@ -6,8 +6,6 @@ import Avatar from 'react-avatar';
 import logo from '../Assets/logo.png';
 import './Navbar.css';
 
-const GOOGLE_MAPS_API_KEY = 'AIzaSyB_hbFsqNsWp1KKR-8qcYDq5sl2vLZeohw'; // Replace with your Google Maps API key
-
 const Navbar = ({ mobile, setMobile, toggleLogin, searchQuery, setSearchQuery, selectedLocation, setSelectedLocation }) => {
   const [currentLocation, setCurrentLocation] = useState(null);
   const [areaName, setAreaName] = useState('');
@@ -15,14 +13,6 @@ const Navbar = ({ mobile, setMobile, toggleLogin, searchQuery, setSearchQuery, s
   const [isAvatarDropdownOpen, setIsAvatarDropdownOpen] = useState(false);
   const [login, setLogin] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [cityOptions, setCityOptions] = useState([
-    'Gachibowli',
-    'Banjara Hills',
-    'Hyderabad',
-    'Dulapally',
-    'Secunderabad',
-    'Doolapally'
-  ]);
 
   useEffect(() => {
     const storedLocation = localStorage.getItem('selectedLocation');
@@ -49,6 +39,9 @@ const Navbar = ({ mobile, setMobile, toggleLogin, searchQuery, setSearchQuery, s
     }
   }, [selectedLocation, currentLocation]);
 
+  useEffect(() => {
+  }, [searchQuery]);
+
   const handleClickOutside = (event) => {
     if (
       !event.target.closest('.dropdown') &&
@@ -71,17 +64,17 @@ const Navbar = ({ mobile, setMobile, toggleLogin, searchQuery, setSearchQuery, s
   };
 
   const toggleLocationDropdown = () => {
-    if (!isLocationDropdownOpen && isAvatarDropdownOpen) {
+    setIsLocationDropdownOpen(!isLocationDropdownOpen);
+    if (isAvatarDropdownOpen) {
       setIsAvatarDropdownOpen(false);
     }
-    setIsLocationDropdownOpen(prev => !prev);
   };
 
   const toggleAvatarDropdown = () => {
-    if (!isAvatarDropdownOpen && isLocationDropdownOpen) {
+    setIsAvatarDropdownOpen(!isAvatarDropdownOpen);
+    if (isLocationDropdownOpen) {
       setIsLocationDropdownOpen(false);
     }
-    setIsAvatarDropdownOpen(prev => !prev);
   };
 
   const handleSelectCurrentLocation = () => {
@@ -108,21 +101,18 @@ const Navbar = ({ mobile, setMobile, toggleLogin, searchQuery, setSearchQuery, s
   };
 
   const fetchAreaName = async (latitude, longitude) => {
-    const url = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${GOOGLE_MAPS_API_KEY}`;
+    const url = `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=en`;
 
     try {
       const response = await fetch(url);
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
       const data = await response.json();
-      if (data.results && data.results.length > 0) {
-        const address = data.results[0].formatted_address;
-        setAreaName(address);
-        setSelectedLocation(address);
-        localStorage.setItem('selectedLocation', address);
+      if (data && data.locality) {
+        const locality = data.locality;
+        setAreaName(locality);
+        setSelectedLocation(locality);
+        localStorage.setItem('selectedLocation', locality);
       } else {
-        console.error('Address not found');
+        console.error('Locality not found');
       }
     } catch (error) {
       console.error('Error fetching area name: ', error);
@@ -132,11 +122,9 @@ const Navbar = ({ mobile, setMobile, toggleLogin, searchQuery, setSearchQuery, s
   };
 
   const handleCitySelect = (city) => {
-    if (city !== selectedLocation) {
-      setAreaName(city);
-      setSelectedLocation(city);
-      localStorage.setItem('selectedLocation', city);
-    }
+    setAreaName(city);
+    setSelectedLocation(city);
+    localStorage.setItem('selectedLocation', city);
     setIsLocationDropdownOpen(false);
   };
 
@@ -157,50 +145,12 @@ const Navbar = ({ mobile, setMobile, toggleLogin, searchQuery, setSearchQuery, s
 
   return (
     <div className="navbar">
-      <Link to="/" className="logo-container">
-        <img src={logo} alt="Logo" className="logo" />
-      </Link>
-      <div className="search-container">
-        <FaSearch className="search-icon" />
-        <input
-          type="text"
-          placeholder="Search"
-          className="search-input"
-          value={searchQuery}
-          onChange={handleSearchChange}
-          onKeyDown={(e) => e.key === 'Enter' && handleSearchSubmit()} // Trigger search on Enter key press
-        />
-      </div>
-      <div className="dropdown">
-        <div
-          tabIndex={0}
-          role="button"
-          className="btn"
-          onClick={toggleLocationDropdown}
-        >
-          <div style={{ display: 'flex', marginRight: '-15px' }}>
-            <FaLocationDot className="location-icon" />
-            <div className="location-title">{selectedLocation || 'Select location'}</div>
-            <FaChevronDown className="chevron-icon" />
-          </div>
-        </div>
-        {isLocationDropdownOpen && (
-          <div className="location-dropdown">
-            {loading ? (
-              <p>Loading...</p>
-            ) : (
-              <>
-                <p onClick={handleSelectCurrentLocation}>Select Current Location</p>
-                <p onClick={handleNoneSelect}>None</p>
-                {cityOptions.map((city) => (
-                  <p key={city} onClick={() => handleCitySelect(city)}>
-                    {city}
-                  </p>
-                ))}
-              </>
-            )}
-          </div>
-        )}
+      <div className="navbar-content">
+        <Link to="/">
+          <img src={logo} alt="Logo" className="logo" style={{ height: '60px', width: 'auto' }} />
+        </Link>
+      
+   
       </div>
       {login ? (
         <div className="dropdown-end">
@@ -209,12 +159,13 @@ const Navbar = ({ mobile, setMobile, toggleLogin, searchQuery, setSearchQuery, s
           </div>
           {isAvatarDropdownOpen && (
             <div className="menu-dropdown">
-              <Link to="/profile">Profile</Link>
-              <Link to="/bookings">Bookings</Link>
-              <Link to="/fav">Favorites</Link>
-              <Link to="/records">Medical Records</Link>
+              <Link to="/profile" style={{ textAlign: 'center' }}>Profile</Link>
+              <Link to="/bookings" style={{ textAlign: 'center' }}>Bookings</Link>
+              <Link to="/fav" style={{ textAlign: 'center' }}>Favorites</Link>
+              <Link to="/records" style={{ textAlign: 'center' }}>Medical Records</Link>
               <Link>Help</Link>
               <p
+                style={{ color: 'red', marginLeft: '10px', marginTop: '8px', marginBottom: '0px' }}
                 onClick={() => {
                   localStorage.removeItem('jwtToken');
                   setLogin(false);

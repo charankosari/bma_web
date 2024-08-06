@@ -1,13 +1,12 @@
 import React, { useState } from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Outlet } from 'react-router-dom';
 import './App.css';
 import LandingPage from './Components/LandingPage';
 import Profile from './Components/User/Profile';
 import HospitalList from './Components/Hospital/HospitalList';
-import Navbar from './Components/Navbar';
 import HospitalDetailsPage from './Components/Hospital/HospitalDetails';
 import Records from './Components/User/Records';
-import DoctorScreen from './Components/Hospital/DoctorScreen'
+import DoctorScreen from './Components/Hospital/DoctorScreen';
 import Fav from './Components/User/Fav';
 import LabList from './Components/Lab/LabList';
 import LabDetailsPage from './Components/Lab/LabDetails';
@@ -19,9 +18,12 @@ import Bookings from './Components/User/Bookings';
 import BookingScreen from './Components/Hospital/BookingScreen';
 import TermsAndConditions from './Components/termsandpolicy/TermsAndConditions';
 import PrivacyPolicy from './Components/termsandpolicy/PrivacyPolicy';
-import LabScreen from './Components/Lab/LabScreen'
-import LabBookingScreen from './Components/Lab/LabBookingScreen'
+import LabScreen from './Components/Lab/LabScreen';
+import LabBookingScreen from './Components/Lab/LabBookingScreen';
 import HelpAndSupport from './Components/HelpAndSupport';
+import Navbar from './Components/Navbar'; // Main Navbar
+import Navbar2 from './Components/Navbar2'; // Alternate Navbar
+import Ok from './Components/Ok'
 function App() {
   const [mobile, setMobile] = useState(false);
   const [login, setLogin] = useState(false);
@@ -38,40 +40,68 @@ function App() {
   const toggleReg = () => setReg(prev => !prev);
   const toggleSignup = () => setShowSignup(prev => !prev);
 
-  return (
-    <BrowserRouter>
-      <Navbar 
-        mobile={mobile} 
-        setMobile={setMobile} 
-        toggleLogin={toggleLogin} 
-        searchQuery={searchQuery} 
-        setSearchQuery={setSearchQuery} 
+  const MainLayout = () => (
+    <div>
+      <Navbar
+        mobile={mobile}
+        setMobile={setMobile}
+        toggleLogin={toggleLogin}
+        searchQuery={searchQuery}
+        setSearchQuery={setSearchQuery}
         selectedLocation={selectedLocation}
         setSelectedLocation={setSelectedLocation}
       />
-      <Routes>
-        <Route path="/" element={<LandingPage login={login} toggleLogin={toggleLogin} mobile={mobile} setMobile={setMobile}/>} />
-        <Route path='/fav' element={<Fav login={login} toggleLogin={toggleLogin} mobile={mobile} setMobile={setMobile}/>}/>
-        <Route path="/profile" element={<Profile login={login} toggleLogin={toggleLogin} mobile={mobile} setMobile={setMobile}/>} />
-        <Route path="/bookings" element={<Bookings login={login} toggleLogin={toggleLogin} mobile={mobile} setMobile={setMobile}/>} />
-        <Route path="/doctorbooking" element={<BookingScreen login={login} toggleLogin={toggleLogin} mobile={mobile} setMobile={setMobile}/>} />
-        <Route path="/labbooking" element={<LabBookingScreen login={login} toggleLogin={toggleLogin} mobile={mobile} setMobile={setMobile}/>} />
-        <Route path="/doctor/:id" element={<DoctorScreen login={login} toggleLogin={toggleLogin} mobile={mobile} setMobile={setMobile}/>} />
-        <Route path="/test/:id" element={<LabScreen login={login} toggleLogin={toggleLogin} mobile={mobile} setMobile={setMobile}/>} />
-        <Route path='/terms-conditions' element={<TermsAndConditions login={login} toggleLogin={toggleLogin} mobile={mobile} setMobile={setMobile} />} />
-        <Route path='/privacy-policy' element={<PrivacyPolicy login={login} toggleLogin={toggleLogin} mobile={mobile} setMobile={setMobile}  />} />
-        <Route path="/lab" element={<LabList login={login} toggleLogin={toggleLogin} mobile={mobile} setMobile={setMobile} searchQuery={searchQuery} selectedLocation={selectedLocation}/>}  /> 
-        <Route path='/hospital' element={<HospitalList login={login} toggleLogin={toggleLogin} mobile={mobile} setMobile={setMobile} searchQuery={searchQuery} selectedLocation={selectedLocation} />} />
-        <Route exact path="/hospitaldetail/:id" element={<HospitalDetailsPage  login={login} toggleLogin={toggleLogin} mobile={mobile} searchQuery={searchQuery} setMobile={setMobile}/>} />
-        <Route exact path="/labdetail/:id" element={<LabDetailsPage login={login} toggleLogin={toggleLogin} mobile={mobile} setMobile={setMobile} searchQuery={searchQuery} />} />
-        <Route exact path="/records" element={<Records login={login} toggleLogin={toggleLogin} mobile={mobile} setMobile={setMobile}/>} />
-        <Route exact path="/help-support" element={<HelpAndSupport login={login} toggleLogin={toggleLogin} mobile={mobile} setMobile={setMobile}/>} />
-      </Routes>
-      {mobile && <MobileVerify toggleMobile={toggleMobile} toggleLogin={toggleLogin} toggleOtp={toggleOtp} setMobileNumber={setMobileNumber} mobileNumber={mobileNumber} toggleSignup={toggleSignup}/>}
-      {otp && <OtpScreen toggleLogin={toggleLogin} toggleOtp={toggleOtp} mobileNumber={mobileNumber}/>}
-      {reg && <OtpRegister toggleLogin={toggleLogin} toggleReg={toggleReg} mobileNumber={mobileNumber}/>}
-      {showSignup && <Signup toggleReg={toggleReg} mobileNumber={mobileNumber} setMobileNumber={setMobileNumber} toggleMobile={toggleMobile} toggleSignup={toggleSignup}/>}
-    </BrowserRouter>
+      <Outlet />
+    </div>
+  );
+
+  const AlternateLayout = () => (
+    <div>
+      <Navbar2
+        mobile={mobile}
+        setMobile={setMobile}
+        toggleLogin={toggleLogin}
+        searchQuery={searchQuery}
+        setSearchQuery={setSearchQuery}
+        selectedLocation={selectedLocation}
+        setSelectedLocation={setSelectedLocation}
+      />
+      <Outlet />
+    </div>
+  );
+
+  return (
+    // <BrowserRouter>
+    //   <Routes>
+    //     <Route element={<MainLayout />}>
+    //       <Route path="/" element={<LandingPage login={login} toggleLogin={toggleLogin} mobile={mobile} setMobile={setMobile} />} />
+    //       <Route path="/fav" element={<Fav login={login} toggleLogin={toggleLogin} mobile={mobile} setMobile={setMobile} />} />
+    //       <Route path="/profile" element={<Profile login={login} toggleLogin={toggleLogin} mobile={mobile} setMobile={setMobile} />} />
+    //       <Route path="/bookings" element={<Bookings login={login} toggleLogin={toggleLogin} mobile={mobile} setMobile={setMobile} />} />
+    //       <Route path="/doctorbooking" element={<BookingScreen login={login} toggleLogin={toggleLogin} mobile={mobile} setMobile={setMobile} />} />
+    //       <Route path="/labbooking" element={<LabBookingScreen login={login} toggleLogin={toggleLogin} mobile={mobile} setMobile={setMobile} />} />
+    //       <Route path="/doctor/:id" element={<DoctorScreen login={login} toggleLogin={toggleLogin} mobile={mobile} setMobile={setMobile} />} />
+    //       <Route path="/test/:id" element={<LabScreen login={login} toggleLogin={toggleLogin} mobile={mobile} setMobile={setMobile} />} />
+    //       <Route path="/terms-conditions" element={<TermsAndConditions login={login} toggleLogin={toggleLogin} mobile={mobile} setMobile={setMobile} />} />
+    //       <Route path="/lab" element={<LabList login={login} toggleLogin={toggleLogin} mobile={mobile} setMobile={setMobile} searchQuery={searchQuery} selectedLocation={selectedLocation} />} />
+    //       <Route path="/hospital" element={<HospitalList login={login} toggleLogin={toggleLogin} mobile={mobile} setMobile={setMobile} searchQuery={searchQuery} selectedLocation={selectedLocation} />} />
+    //       <Route path="/hospitaldetail/:id" element={<HospitalDetailsPage login={login} toggleLogin={toggleLogin} mobile={mobile} searchQuery={searchQuery} setMobile={setMobile} />} />
+    //       <Route path="/labdetail/:id" element={<LabDetailsPage login={login} toggleLogin={toggleLogin} mobile={mobile} setMobile={setMobile} searchQuery={searchQuery} />} />
+    //       <Route path="/records" element={<Records login={login} toggleLogin={toggleLogin} mobile={mobile} setMobile={setMobile} />} />
+    //       <Route path="/help-support" element={<HelpAndSupport login={login} toggleLogin={toggleLogin} mobile={mobile} setMobile={setMobile} />} />
+    //     </Route>
+
+    //     <Route element={<AlternateLayout />}>
+    //     <Route path="/privacy-policy" element={<PrivacyPolicy login={login} toggleLogin={toggleLogin} mobile={mobile} setMobile={setMobile} />} />
+
+    //     </Route>
+    //   </Routes>
+    //   {mobile && <MobileVerify toggleMobile={toggleMobile} toggleLogin={toggleLogin} toggleOtp={toggleOtp} setMobileNumber={setMobileNumber} mobileNumber={mobileNumber} toggleSignup={toggleSignup} />}
+    //   {otp && <OtpScreen toggleLogin={toggleLogin} toggleOtp={toggleOtp} mobileNumber={mobileNumber} />}
+    //   {reg && <OtpRegister toggleLogin={toggleLogin} toggleReg={toggleReg} mobileNumber={mobileNumber} />}
+    //   {showSignup && <Signup toggleReg={toggleReg} mobileNumber={mobileNumber} setMobileNumber={setMobileNumber} toggleMobile={toggleMobile} toggleSignup={toggleSignup} />}
+    // </BrowserRouter>
+    <><Ok/></>
   );
 }
 

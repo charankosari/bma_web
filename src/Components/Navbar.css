@@ -80,10 +80,11 @@ body {
   font-size: 1.5rem;
 }
 
-.dropdown .btn .location-title{
+.dropdown .btn .location-title {
   font-size: 16px;
   margin-top: 4px;
 }
+
 .dropdown .btn .chevron-icon {
   margin-top: 0.25rem;
   font-size: 1.125rem;
@@ -126,7 +127,6 @@ body {
 .location-dropdown p:hover {
   background-color: #555555;
 }
-
 
 .dropdown-end {
   display: flex;
@@ -202,7 +202,7 @@ body {
 
 /* Media queries for responsiveness */
 @media (max-width: 1024px) {
-  .logo{
+  .logo {
     height: 50px;
     width: 50px;
   }
@@ -238,7 +238,7 @@ body {
     font-size: 1.25rem;
   }
   
-  .dropdown .btn .location-title{
+  .dropdown .btn .location-title {
     font-size: 16px;
     margin-top: 4px;
   }
@@ -261,8 +261,8 @@ body {
 
 @media (max-width: 768px) {
   .logo {
-    width: 50px;
-    height: 50px;
+    width: 40px !important;
+    height: auto !important;
   }
 
   .search-container {
@@ -279,7 +279,7 @@ body {
   .dropdown .btn .location-icon {
     font-size: 1.25rem;
   }
-  .dropdown .btn .location-title{
+  .dropdown .btn .location-title {
     font-size: 14px;
     margin-top: 4px;
   }
@@ -317,7 +317,7 @@ body {
   }
 
   .dropdown .btn .location-icon {
-    font-size: 01.25rem;
+    font-size: 1.25rem;
   }
 
   .dropdown .btn .chevron-icon {
@@ -333,6 +333,6 @@ body {
     cursor: pointer;
     height: 2.5rem;
     width: 5rem;
-   font-size: medium;
+    font-size: medium;
   }
 }
