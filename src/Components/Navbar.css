@@ -32,7 +32,7 @@ body {
 
 .search-container {
   position: relative;
-  width: 90%;
+  width: 100%;
   flex: 1;
 }
 
@@ -48,7 +48,7 @@ body {
 .search-input {
   height: 2.5rem;
   padding-left: 2.5rem;
-  width: 90%;
+  width: 100%;
   background-color: white;
   color: black;
   border: none;

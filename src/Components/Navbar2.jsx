@@ -82,44 +82,35 @@ const Navbar = ({ mobile, setMobile, toggleLogin, searchQuery, setSearchQuery, s
       setLoading(true);
       navigator.geolocation.getCurrentPosition(
         (position) => {
-          const { latitude, longitude } = position.coords; 
-          setCurrentLocation({ latitude, longitude }); 
+          const { latitude, longitude } = position.coords;
+          setCurrentLocation({ latitude, longitude });
           fetchAreaName(latitude, longitude);
-          setSelectedLocation('Current Location'); 
-          localStorage.setItem('selectedLocation', 'Current Location'); 
-          setIsLocationDropdownOpen(false); 
-          setLoading(false); 
+          setSelectedLocation('Current Location');
+          localStorage.setItem('selectedLocation', 'Current Location');
+          setIsLocationDropdownOpen(false);
         },
         (error) => {
           console.error('Error getting location: ', error);
-          setLoading(false); 
+          setLoading(false);
         }
       );
     } else {
       alert('Geolocation is not supported by this browser.');
-      setLoading(false); 
+      setLoading(false);
     }
   };
-  
 
   const fetchAreaName = async (latitude, longitude) => {
-    const url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&zoom=50&addressdetails=1`;
+    const url = `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=en`;
+
     try {
       const response = await fetch(url);
       const data = await response.json();
-      if (data && data.address) {
-        const locality = data.address.county;
-        if (locality) {
-          let l=''
-          const words = locality.split(' ');
-          if (words[words.length - 1].toLowerCase() === 'mandal') {
-            words.pop(); 
-          }
-          l = words.join(' ');
-          setAreaName(l);
-          setSelectedLocation(l);
-          localStorage.setItem('selectedLocation', l);
-        }
+      if (data && data.locality) {
+        const locality = data.locality;
+        setAreaName(locality);
+        setSelectedLocation(locality);
+        localStorage.setItem('selectedLocation', locality);
       } else {
         console.error('Locality not found');
       }
@@ -158,45 +149,8 @@ const Navbar = ({ mobile, setMobile, toggleLogin, searchQuery, setSearchQuery, s
         <Link to="/">
           <img src={logo} alt="Logo" className="logo" style={{ height: '60px', width: 'auto' }} />
         </Link>
-        <div className="search-container">
-          <FaSearch className="search-icon" />
-          <input
-            type="text"
-            placeholder="Search"
-            className="search-input"
-            value={searchQuery}
-            onChange={handleSearchChange}
-            onKeyDown={(e) => e.key === 'Enter' && handleSearchSubmit()} // Trigger search on Enter key press
-          />
-        </div>
-        <div className="dropdown">
-          <div
-            tabIndex={0}
-            role="button"
-            className="btn"
-            onClick={toggleLocationDropdown}
-          >
-            <div style={{ display: 'flex', marginRight: '-15px' }}>
-              <FaLocationDot className="location-icon" />
-              <div className="location-title">{selectedLocation || 'Select location'}</div>
-              <FaChevronDown className="chevron-icon" />
-            </div>
-          </div>
-          {isLocationDropdownOpen && (
-            <div className="location-dropdown">
-              <p onClick={handleSelectCurrentLocation}>
-                {loading ? 'Loading...' : 'Select Current Location'}
-              </p>
-              <p onClick={handleNoneSelect}>None</p>
-              <p onClick={() => handleCitySelect('Gachibowli')}>Gachibowli</p>
-              <p onClick={() => handleCitySelect('Banjara Hills')}>Banjara Hills</p>
-              <p onClick={() => handleCitySelect('Hyderabad')}>Hyderabad</p>
-              <p onClick={() => handleCitySelect('Dulapally')}>Dulapally</p>
-              <p onClick={() => handleCitySelect('Secunderabad')}>Secunderabad</p>
-              <p onClick={() => handleCitySelect('Doolapally')}>Doolapally</p>
-            </div>
-          )}
-        </div>
+      
+   <h2 style={{color:'white'}}>BookMyAppointments</h2>
       </div>
       {login ? (
         <div className="dropdown-end">
