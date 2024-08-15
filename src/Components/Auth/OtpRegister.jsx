@@ -32,15 +32,13 @@ function OtpRegister({ toggleLogin, toggleReg, mobileNumber }) {
   }
   const handleSubmit = async () => {
     setLoading(true);
-    const otpNumber = Number(otp.join('')); // Convert OTP digits to integer
+    const otpNumber = Number(otp.join(''));
     console.log(otpNumber)
 
-    // Log the data to inspect it
-    console.log('Submitting OTP:', otpNumber);
-    console.log('Submitting Mobile Number:', number);
    const payload = {  number, otp: otpNumber };
     try {
-      const response = await fetch("https://server.bookmyappointments.in/api/bma/verifyregisterotp", {
+      // const response = await fetch("https://server.bookmyappointments.in/api/bma/verifyregisterotp", {
+      const response = await fetch("http://localhost:9999/api/bma/verifyregisterotp", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -51,9 +49,11 @@ function OtpRegister({ toggleLogin, toggleReg, mobileNumber }) {
       console.log(data)
       if (data.success) {
         localStorage.setItem('jwtToken', data.jwtToken);
-        navigate('/');
         toggleLogin();
         toggleReg();
+        window.location.reload();
+        navigate('/');
+
       } else {
         alert(data.message || 'Invalid response from server');
       }

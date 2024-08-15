@@ -32,7 +32,8 @@ const Bookings = () => {
           return;
         }
 
-        const response = await fetch('https://server.bookmyappointments.in/api/bma/allbookingdetails', {
+        // const response = await fetch('https://server.bookmyappointments.in/api/bma/allbookingdetails', {
+        const response = await fetch('http://localhost:9999/api/bma/allbookingdetails', {
           headers: {
             'Authorization': `Bearer ${jwtToken}`,
             'Content-Type': 'application/json',
@@ -92,122 +93,196 @@ const Bookings = () => {
     <>
       <Box sx={{ padding: 2 }}>
         {loading ? (
-          <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
+          <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 ,minHeight:'50vh',alignItems:'center'}}>
             <CircularProgress />
           </Box>
         ) : error ? (
+          <div style={{minHeight:'50vh',justifyContent:'center',alignItems:'center'}}>
           <Alert severity="error">{error}</Alert>
+          </div>
         ) : (
           <Box>
-            {bookingDetails.length <= 0 ? (
-              <Box
+          {bookingDetails.length <= 0 ? (
+            <Box
+              sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                height: '60vh',
+                textAlign: 'center',
+              }}
+            >
+              <EmojiEmotionsIcon
                 sx={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  height: '60vh',
-                  textAlign: 'center',
+                  fontSize: isMobile ? 60 : 80, // Responsive font size for the icon
+                  color: '#ffb300',
+                }}
+              />
+              <Typography
+                variant="h6"
+                sx={{
+                  mt: 2,
+                  fontSize: isMobile ? '1.25rem' : '1.5rem', // Responsive font size
                 }}
               >
-                <EmojiEmotionsIcon sx={{ fontSize: 80, color: '#ffb300' }} />
-                <Typography variant="h6" sx={{ mt: 2 }}>
-                  No bookings available
-                </Typography>
-                <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-                  It looks like you have no bookings at the moment. Check back later!
-                </Typography>
-              </Box>
-            ) : (
-              Object.keys(categorizedBookings).map((category) => {
-                const bookings = categorizedBookings[category];
-                return bookings.length > 0 ? (
-                  <Box key={category} sx={{ mb: 4 }}>
-                    <Typography variant="h5" sx={{ mb: 2 }}>
-                      {category.charAt(0).toUpperCase() + category.slice(1)} Bookings
-                    </Typography>
-                    <Grid container spacing={2}>
-                      {bookings.map((bookingDetail) => {
-                        const { booking, hospital, doctor, test } = bookingDetail;
-                        const { latitude, longitude } = hospital?.location?.[0] || {};
-
-                        return (
-                          <Grid item key={booking._id} xs={12}>
-                            <Card
-                              sx={{
-                                padding: isMobile ? 1 : 2,
-                                backgroundColor: '#d9d9d9',
-                                color: 'black',
-                                fontWeight: 'bold',
-                                borderRadius: '15px',
-                              }}
-                            >
-                              <CardContent>
-                                <Box sx={{
+                No bookings available
+              </Typography>
+              <Typography
+                variant="body2"
+                sx={{
+                  color: 'text.secondary',
+                  fontSize: isMobile ? '0.875rem' : '1rem', // Responsive font size
+                }}
+              >
+                It looks like you have no bookings at the moment. Check back later!
+              </Typography>
+            </Box>
+          ) : (
+            Object.keys(categorizedBookings).map((category) => {
+              const bookings = categorizedBookings[category];
+              return bookings.length > 0 ? (
+                <Box key={category} sx={{ mb: 4 }}>
+                  <Typography
+                    variant="h5"
+                    sx={{
+                      mb: 2,
+                      fontSize: isMobile ? '1.5rem' : '2rem', // Responsive font size
+                    }}
+                  >
+                    {category.charAt(0).toUpperCase() + category.slice(1)} Bookings
+                  </Typography>
+                  <Grid container spacing={2}>
+                    {bookings.map((bookingDetail) => {
+                      const { booking, hospital, doctor, test } = bookingDetail;
+                      const { latitude, longitude } = hospital?.location?.[0] || {};
+        
+                      return (
+                        <Grid item key={booking._id} xs={12}>
+                          <Card
+                            sx={{
+                              padding: isMobile ? 1 : 2,
+                              backgroundColor: '#d9d9d9',
+                              color: 'black',
+                              fontWeight: 'bold',
+                              borderRadius: '15px',
+                            }}
+                          >
+                            <CardContent>
+                              <Box
+                                sx={{
                                   display: 'flex',
                                   flexDirection: isMobile ? 'column' : 'row',
                                   justifyContent: 'space-between',
                                   alignItems: isMobile ? 'flex-start' : 'center',
-                                  gap: 2
-                                }}>
-                                  <Box>
-                                    <Typography variant="h6" component="div">
-                                      Booking Date and Time
-                                    </Typography>
-                                    <Typography variant="body2" sx={{ color: 'black' }}>
-                                      {formatDate(booking.date)} {booking.time}
-                                    </Typography>
-                                  </Box>
-                                  <Box sx={{ textAlign: isMobile ? 'left' : 'center' }}>
-                                    <Typography variant="h6" component="div" sx={{textTransform:'capitalize'}}>
-                                      {hospital?.hospitalName}
-                                    </Typography>
-                                    <Typography variant="body2" sx={{ color: 'black',textTransform:'capitalize' }}>
-                                      {doctor ? `${doctor.name} - ${doctor.specialist}` : test?.name}
-                                    </Typography>
-                                  </Box>
-                                  <Box sx={{ textAlign: isMobile ? 'left' : 'right' }}>
-                                    <Typography variant="body2" sx={{ color: 'black' }}>
-                                      Booked on {formatDate(booking.bookedOn)}
-                                    </Typography>
-                                    <Typography variant="h6" sx={{ fontWeight: 'bold', color: 'black' }}>
-                                      Paid Amount
-                                    </Typography>
-                                    <Typography variant="body2" sx={{ fontWeight: 'bold', color: 'black' }}>
-                                      ₹ {booking.amountpaid}
-                                    </Typography>
-                                  </Box>
-                                </Box>
-                                {hospital && (
-                                  <Button
-                                    variant="contained"
-                                    color="success"
+                                  gap: 2,
+                                }}
+                              >
+                                <Box>
+                                  <Typography
+                                    variant="h6"
+                                    component="div"
                                     sx={{
-                                      mt: 2,
-                                      borderRadius: '20px',
-                                      textTransform: 'none',
-                                      backgroundColor: '#4CAF50',
-                                      color: 'white',
-                                      '&:hover': {
-                                        backgroundColor: '#45a049',
-                                      },
+                                      fontSize: isMobile ? '1rem' : '1.25rem', // Responsive font size
                                     }}
-                                    onClick={() => handleNavigate(latitude, longitude)}
                                   >
-                                    Navigate to Hospital
-                                  </Button>
-                                )}
-                              </CardContent>
-                            </Card>
-                          </Grid>
-                        );
-                      })}
-                    </Grid>
-                  </Box>
-                ) : null;
-              })
-            )}
-          </Box>
+                                    Booking Date and Time
+                                  </Typography>
+                                  <Typography
+                                    variant="body2"
+                                    sx={{
+                                      color: 'black',
+                                      fontSize: isMobile ? '0.875rem' : '1rem', // Responsive font size
+                                    }}
+                                  >
+                                    {formatDate(booking.date)} {booking.time}
+                                  </Typography>
+                                </Box>
+                                <Box sx={{ textAlign: isMobile ? 'left' : 'center' }}>
+                                  <Typography
+                                    variant="h6"
+                                    component="div"
+                                    sx={{
+                                      textTransform: 'capitalize',
+                                      fontSize: isMobile ? '1rem' : '1.25rem', // Responsive font size
+                                    }}
+                                  >
+                                    {hospital?.hospitalName}
+                                  </Typography>
+                                  <Typography
+                                    variant="body2"
+                                    sx={{
+                                      color: 'black',
+                                      textTransform: 'capitalize',
+                                      fontSize: isMobile ? '0.875rem' : '1rem', // Responsive font size
+                                    }}
+                                  >
+                                    {doctor ? `${doctor.name} - ${doctor.specialist}` : test?.name}
+                                  </Typography>
+                                </Box>
+                                <Box sx={{ textAlign: isMobile ? 'left' : 'right' }}>
+                                  <Typography
+                                    variant="body2"
+                                    sx={{
+                                      color: 'black',
+                                      fontSize: isMobile ? '0.875rem' : '1rem', // Responsive font size
+                                    }}
+                                  >
+                                    Booked on {formatDate(booking.bookedOn)}
+                                  </Typography>
+                                  <Typography
+                                    variant="h6"
+                                    sx={{
+                                      fontWeight: 'bold',
+                                      color: 'black',
+                                      fontSize: isMobile ? '1rem' : '1.25rem', // Responsive font size
+                                    }}
+                                  >
+                                    Paid Amount
+                                  </Typography>
+                                  <Typography
+                                    variant="body2"
+                                    sx={{
+                                      fontWeight: 'bold',
+                                      color: 'black',
+                                      fontSize: isMobile ? '0.875rem' : '1rem', // Responsive font size
+                                    }}
+                                  >
+                                    ₹ {booking.amountpaid}
+                                  </Typography>
+                                </Box>
+                              </Box>
+                              {hospital && (
+                                <Button
+                                  variant="contained"
+                                  color="success"
+                                  sx={{
+                                    mt: 2,
+                                    borderRadius: '20px',
+                                    textTransform: 'none',
+                                    backgroundColor: '#4CAF50',
+                                    color: 'white',
+                                    fontSize: isMobile ? '0.875rem' : '1rem', // Responsive font size
+                                    '&:hover': {
+                                      backgroundColor: '#45a049',
+                                    },
+                                  }}
+                                  onClick={() => handleNavigate(latitude, longitude)}
+                                >
+                                  Navigate to Hospital
+                                </Button>
+                              )}
+                            </CardContent>
+                          </Card>
+                        </Grid>
+                      );
+                    })}
+                  </Grid>
+                </Box>
+              ) : null;
+            })
+          )}
+        </Box>
         )}
       </Box>
       <Footer />

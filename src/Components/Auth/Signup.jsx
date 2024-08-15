@@ -2,20 +2,38 @@ import React, { useState } from 'react';
 import './Signup.css';
 import { useNavigate } from 'react-router-dom';
 
-function Signup({ toggleReg, mobileNumber, setMobileNumber , toggleMobile, toggleSignup}) {
+function Signup({ toggleReg, mobileNumber, setMobileNumber , toggleMobile, toggleSignup,toggleLogin}) {
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
+    const log=()=>{
+        toggleMobile();
+        toggleLogin()
+      }
     const handleRegister = async () => {
         if (!name || !email || !mobileNumber) {
             alert('Please fill in all fields');
             return;
         }
+        if(name.length<4){
+            alert("Name should be atleast 4 characters");
+            return;
+        }
+        if(mobileNumber.length!==10){
+            alert('Please enter a valid 10 digits number');
+            return;
+            
+        }
+        if(!email.includes('@'&&'.com')){
+            alert('Please provide a valid email');
+            return;
+        }
         setLoading(true);
 
         try {
-            const response = await fetch("https://server.bookmyappointments.in/api/bma/register", {
+            // const response = await fetch("https://server.bookmyappointments.in/api/bma/register", {
+            const response = await fetch("http://localhost:9999/api/bma/register", {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -51,6 +69,7 @@ function Signup({ toggleReg, mobileNumber, setMobileNumber , toggleMobile, toggl
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     disabled={loading}
+                    required
                 />
                 <input
                     type="email"
@@ -58,6 +77,8 @@ function Signup({ toggleReg, mobileNumber, setMobileNumber , toggleMobile, toggl
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     disabled={loading}
+                    required
+
                 />
                 <input
                     type="tel"
@@ -65,13 +86,15 @@ function Signup({ toggleReg, mobileNumber, setMobileNumber , toggleMobile, toggl
                     value={mobileNumber}
                     onChange={(e) => setMobileNumber(e.target.value)}
                     disabled={loading}
+                    required
+
                 />
                 <button onClick={handleRegister} disabled={loading}>
                     {loading ? 'Registering...' : 'Send OTP'}
                 </button>
                 <div className="signin-prompt">
                     Already have an account?{' '}
-                    <span onClick={handleRegister} className="signin-link">
+                    <span onClick={()=>{login()}} className="signin-link">
                         Login
                     </span>
                 </div>

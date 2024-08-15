@@ -21,7 +21,8 @@ const Profile = ({ login, toggleLogin, mobile, setMobile }) => {
         if (!jwtToken) {
           throw new Error('JWT token not found in localStorage');
         }
-        const response = await axios.get('https://server.bookmyappointments.in/api/bma/me', {
+        // const response = await axios.get('https://server.bookmyappointments.in/api/bma/me', {
+        const response = await axios.get('http://localhost:9999/api/bma/me', {
           headers: { Authorization: `Bearer ${jwtToken}` }
         });
         setUserDetails(response.data.user);
@@ -222,9 +223,20 @@ const Profile = ({ login, toggleLogin, mobile, setMobile }) => {
             </Grid>
           </CardContent>
           <CardActions sx={{ justifyContent: 'flex-end', p: 2 }}>
-            <Button variant="contained" color="primary" onClick={handleSave} disabled={loading}>
+            <Button
+              variant="contained"
+              sx={{
+                backgroundColor: '#2BB673',
+                '&:hover': {
+                  backgroundColor: '#249960', 
+                },
+              }}
+              onClick={handleSave}
+              disabled={loading}
+            >
               {loading ? <CircularProgress size={24} /> : "Save"}
             </Button>
+
           </CardActions>
         </Card>
       </Container>

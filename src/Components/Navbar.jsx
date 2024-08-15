@@ -6,7 +6,7 @@ import Avatar from 'react-avatar';
 import logo from '../Assets/logo.png';
 import './Navbar.css';
 
-const Navbar = ({ mobile, setMobile, toggleLogin, searchQuery, setSearchQuery, selectedLocation, setSelectedLocation }) => {
+const Navbar = ({ mobile, setMobile, toggleLogin, searchQuery, setSearchQuery, selectedLocation, setSelectedLocation ,loggedIn}) => {
   const [currentLocation, setCurrentLocation] = useState(null);
   const [areaName, setAreaName] = useState('');
   const [isLocationDropdownOpen, setIsLocationDropdownOpen] = useState(false);
@@ -149,7 +149,6 @@ const Navbar = ({ mobile, setMobile, toggleLogin, searchQuery, setSearchQuery, s
   };
 
   const handleSearchSubmit = () => {
-    console.log('Search query: ', searchQuery);
   };
 
   return (
@@ -166,7 +165,7 @@ const Navbar = ({ mobile, setMobile, toggleLogin, searchQuery, setSearchQuery, s
             className="search-input"
             value={searchQuery}
             onChange={handleSearchChange}
-            onKeyDown={(e) => e.key === 'Enter' && handleSearchSubmit()} // Trigger search on Enter key press
+            onKeyDown={(e) => e.key === 'Enter' && handleSearchSubmit()} 
           />
         </div>
         <div className="dropdown">
@@ -198,7 +197,7 @@ const Navbar = ({ mobile, setMobile, toggleLogin, searchQuery, setSearchQuery, s
           )}
         </div>
       </div>
-      {login ? (
+      {login ||loggedIn? (
         <div className="dropdown-end">
           <div role="button" className="avatar" onClick={toggleAvatarDropdown}>
             <Avatar name="User" round={true} size="40" />
@@ -209,7 +208,7 @@ const Navbar = ({ mobile, setMobile, toggleLogin, searchQuery, setSearchQuery, s
               <Link to="/bookings" style={{ textAlign: 'center' }}>Bookings</Link>
               <Link to="/fav" style={{ textAlign: 'center' }}>Favorites</Link>
               <Link to="/records" style={{ textAlign: 'center' }}>Medical Records</Link>
-              <Link>Help</Link>
+              <Link to='/help-support'>help and support</Link>
               <p
                 style={{ color: 'red', marginLeft: '10px', marginTop: '8px', marginBottom: '0px' }}
                 onClick={() => {

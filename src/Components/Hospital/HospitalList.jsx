@@ -3,6 +3,67 @@ import { Box, Typography, CircularProgress, Card, CardContent, CardMedia, Contai
 import { useNavigate } from 'react-router-dom';
 import Footer from '../Footer';
 
+// Import images for categories
+import image1 from "../../Assets/dental.png";
+import image2 from "../../Assets/dental.png";
+import image3 from "../../Assets/dental.png";
+import image4 from "../../Assets/dental.png";
+import image5 from "../../Assets/dental.png";
+import image6 from "../../Assets/dental.png";
+
+const categoryImages = {
+  "General Physician": image1,
+  "Dental Care": image2,
+  "Homeopathy": image3,
+  "Ayurveda": image4,
+  "Mental Wellness": image5,
+  "Physiotherapy": image6,
+};
+
+const processHospitals = (data) => {
+  const doctorMap = new Map();
+  const allSpecialists = new Set();
+
+  data.c.forEach((doctorData) => {
+    const doctor = doctorData.doctor;
+    const hasBookings = Object.keys(doctor.bookingsids || {}).length > 0;
+    if (hasBookings) {
+      doctorMap.set(doctor._id, doctor);
+      allSpecialists.add(doctor.specialist);
+    }
+  });
+  
+  const updatedHospitals = data.hospitals
+    .filter(hospital => hospital.role === "hospital")
+    .map(hospital => {
+      const updatedDoctors = hospital.doctors
+        .map(doc => {
+          const doctor = doctorMap.get(doc.doctorid);
+          return doctor ? { doctorid: doc.doctorid } : null;
+        })
+        .filter(doc => doc !== null);
+      const taglines = Array.from(new Set(
+        updatedDoctors.map(doc => doctorMap.get(doc.doctorid)?.specialist || '')
+      ));
+      const image = Array.isArray(hospital.image) 
+        ? (hospital.image.length > 0 ? hospital.image[0] : '') 
+        : hospital.image || '';
+      return {
+        id: hospital._id,
+        name: hospital.hospitalName,
+        location: hospital.address[0].city,
+        image: image,
+        taglines: taglines,
+        doctors: updatedDoctors
+      };
+    })
+    .filter(hospital => hospital.doctors.length > 0); 
+  return {
+    updatedHospitals,
+    categories: Array.from(allSpecialists)
+  };
+};
+
 const HospitalList = ({ login, toggleLogin, mobile, setMobile, searchQuery, selectedLocation }) => {
   const navigate = useNavigate();
   const theme = useTheme();
@@ -13,12 +74,15 @@ const HospitalList = ({ login, toggleLogin, mobile, setMobile, searchQuery, sele
   const [hospitalsData, setHospitalsData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [warningMessage, setWarningMessage] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('');
+  const [cat,setCat]=useState([]);
 
   useEffect(() => {
     const fetchHospitals = async () => {
       try {
         setLoading(true);
-        const response = await fetch('https://server.bookmyappointments.in/api/bma/hospital/admin/getallhospitals');
+        // const response = await fetch('https://server.bookmyappointments.in/api/bma/hospital/admin/getallhospitals');
+        const response = await fetch('http://localhost:9999/api/bma/hospital/admin/getallhospitalsrem');
         const data = await response.json();
         if (data.success) {
           const formattedData = data.hospitals
@@ -29,9 +93,12 @@ const HospitalList = ({ login, toggleLogin, mobile, setMobile, searchQuery, sele
               location: hospital.address[0].city,
               image: hospital.image[0] || '',
               taglines: hospital.category.map(category => category.types),
+              doctors: hospital.doctors 
             }));
-          setHospitalsData(formattedData);
-          setFilteredHospitals(formattedData);
+            const s = processHospitals(data);
+            setCat(s.categories)
+          setHospitalsData(s.updatedHospitals);
+          setFilteredHospitals(s.updatedHospitals);
         }
       } catch (error) {
         console.error('Error fetching hospital data: ', error);
@@ -64,6 +131,15 @@ const HospitalList = ({ login, toggleLogin, mobile, setMobile, searchQuery, sele
       setFilteredHospitals(hospitalsData);
     }
   }, [searchQuery, hospitalsData]);
+
+  useEffect(() => {
+    if (selectedCategory) {
+      const filtered = hospitalsData.filter(hospital =>
+        hospital.taglines.some(tagline => tagline.toLowerCase().includes(selectedCategory.toLowerCase()))
+      );
+      setFilteredHospitals(filtered);
+    }
+  }, [selectedCategory, hospitalsData]);
 
   const fetchAreaName = async (latitude, longitude) => {
     const apiKey = 'YOUR_OPENCAGE_API_KEY'; 
@@ -111,6 +187,10 @@ const HospitalList = ({ login, toggleLogin, mobile, setMobile, searchQuery, sele
     navigate(`/hospitaldetail/${hospitalId}`);
   };
 
+  const handleCategoryClick = (category) => {
+    setSelectedCategory(category);
+  };
+
   return (
     <>
       <Container maxWidth="2xl">
@@ -119,11 +199,10 @@ const HospitalList = ({ login, toggleLogin, mobile, setMobile, searchQuery, sele
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
-            minHeight: isMobile ? '60vh' : '70vh', // Minimum height for mobile and PC screens
+            height: 'auto',
+            minHeight: isMobile ? '50vh' : '65vh',
             width: '100%',
-            backgroundColor: '#f5f5f5',
             borderRadius: '20px',
-            boxShadow: 3,
             p: 3
           }}
         >
@@ -131,6 +210,45 @@ const HospitalList = ({ login, toggleLogin, mobile, setMobile, searchQuery, sele
             <CircularProgress />
           ) : (
             <>
+              <Box
+                sx={{
+                  display: 'flex',
+                  overflowX: 'auto',
+                  whiteSpace: 'nowrap',
+                  mb: 2,
+                  p: 1,
+                  borderBottom: '1px solid #ddd'
+                }}
+              >
+                {Object.keys(cat).map((category, index) => (
+                  <Box
+                    key={index}
+                    sx={{
+                      display: 'inline-block',
+                      mx: 1,
+                      textAlign: 'center',
+                      cursor: 'pointer',
+                      borderRadius: '8px',
+                      overflow: 'hidden',
+                      border: selectedCategory === category ? '2px solid #000' : 'none',
+                    }}
+                    onClick={() => handleCategoryClick(category)}
+                  >
+                    <img 
+                      src={categoryImages[category]} 
+                      alt={category} 
+                      style={{ 
+                        width: '50px', 
+                        height: '50px', 
+                        borderRadius: '10px' 
+                      }}
+                    />
+                    <Typography variant="caption" sx={{ mt: 1 }}>
+                      {category}
+                    </Typography>
+                  </Box>
+                ))}
+              </Box>
               {warningMessage && (
                 <Typography variant="h6" color="error" gutterBottom>
                   {warningMessage}
@@ -144,80 +262,44 @@ const HospitalList = ({ login, toggleLogin, mobile, setMobile, searchQuery, sele
                   width: '100%',
                 }}
               >
-                {filteredHospitals.length === 0 && !warningMessage ? (
-                  <Typography variant="h6" color="textSecondary">
-                    No hospitals found.
-                  </Typography>
-                ) : (
-                  filteredHospitals.map(hospital => (
-                    <Card
-                      key={hospital.id}
+                {filteredHospitals.length > 0 ? (
+                  filteredHospitals.map((hospital) => (
+                    <Card 
+                      key={hospital.id} 
                       sx={{
                         display: 'flex',
-                        flexDirection: 'row',
-                        alignItems: 'center',
-                        width: '100%',
                         mb: 2,
-                        boxShadow: 3,
-                        borderRadius: 2,
-                        height: isMobile ? '100px' : '120px', 
-                        '&:hover': {
-                          cursor: 'pointer',
-                          backgroundColor: '#2BB673',
-                        }
+                        width: '100%',
+                        borderRadius: '12px',
+                        overflow: 'hidden'
                       }}
                       onClick={() => handleHospitalClick(hospital.id)}
                     >
-                      <Box
-                        sx={{
-                          width: isMobile ? 90 : 120, 
-                          height: isMobile ? 90 : 120,
-                          borderRadius: 2,
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          overflow: 'hidden',
-                          padding: isMobile ? '5px' : '10px', 
-                          backgroundColor: 'transparent'
-                        }}
-                      >
-                        {hospital.image ? (
-                          <CardMedia
-                            component="img"
-                            sx={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '5px' }}
-                            image={hospital.image}
-                            alt={hospital.name}
-                          />
-                        ) : (
-                          <Typography 
-                            variant="h6" 
-                            sx={{ 
-                              textAlign: 'center', 
-                              color: '#555', 
-                              lineHeight: isMobile ? '90px' : '120px', 
-                              backgroundColor: '#e0e0e0',
-                              width: '100%',
-                              height: '100%',
-                              display: 'flex',
-                              alignItems: 'center',
-                              justifyContent: 'center',
-                              borderRadius: '5px'
-                            }}
-                          >
-                            {hospital.name.charAt(0)}
-                          </Typography>
-                        )}
-                      </Box>
-                      <CardContent sx={{ p: isMobile ? 1 : 2 }}>
-                        <Typography variant="h6" sx={{ fontSize: isMobile ? '1rem' : '1.25rem' }}>
+                      <CardMedia
+                        component="img"
+                        sx={{ width: 150, height: 150 }}
+                        image={hospital.image}
+                        alt={hospital.name}
+                      />
+                      <CardContent>
+                        <Typography variant="h6" gutterBottom>
                           {hospital.name}
                         </Typography>
-                        <Typography color="textSecondary" sx={{ fontSize: isMobile ? '0.875rem' : '1rem' }}>
+                        <Typography variant="body2" color="textSecondary">
                           {hospital.location}
                         </Typography>
+                        <Box sx={{ mt: 1 }}>
+                          {hospital.taglines.map((tagline, index) => (
+                            <Typography key={index} variant="body2" color="textSecondary">
+                              {tagline}
+                            </Typography>
+                          ))}
+                        </Box>
                       </CardContent>
                     </Card>
                   ))
+                ) : (
+                  <Typography variant="h6">No hospitals found.</Typography>
                 )}
               </Box>
             </>

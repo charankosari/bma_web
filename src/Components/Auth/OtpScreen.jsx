@@ -2,7 +2,7 @@ import React, { useRef, useState } from 'react';
 import './OtpScreen.css';
 import { useNavigate, useLocation } from 'react-router-dom';
 
-function OtpScreen({ toggleLogin, toggleOtp, mobileNumber }) {
+function OtpScreen({ toggleLogin, toggleOtp, mobileNumber,Log }) {
   const inputRefs = useRef([]);
   const navigate = useNavigate();
   const location = useLocation();
@@ -27,7 +27,8 @@ function OtpScreen({ toggleLogin, toggleOtp, mobileNumber }) {
     const otpNumber = Number(otpno.join(''));
 const userid=sessionStorage.getItem('userid')
     try {
-      const response = await fetch("https://server.bookmyappointments.in/api/bma/verifyotp", {
+      // const response = await fetch("https://server.bookmyappointments.in/api/bma/verifyotp", {
+      const response = await fetch("http://localhost:9999/api/bma/verifyotp", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -39,9 +40,11 @@ const userid=sessionStorage.getItem('userid')
 
       if (data.success) {
         localStorage.setItem('jwtToken', data.jwtToken);
-        navigate('/');  
+        Log(true); 
         toggleLogin();
         toggleOtp();
+        window.location.reload();
+        navigate('/');  
       } else {
         alert(data.message || 'Invalid response from server');
       }

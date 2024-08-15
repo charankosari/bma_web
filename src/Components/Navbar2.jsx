@@ -150,7 +150,7 @@ const Navbar = ({ mobile, setMobile, toggleLogin, searchQuery, setSearchQuery, s
           <img src={logo} alt="Logo" className="logo" style={{ height: '60px', width: 'auto' }} />
         </Link>
       
-   <h2 style={{color:'white'}}>BookMyAppointments</h2>
+   <h2 style={{color:'white'}} className='bookmyappointments'>BookMyAppointments</h2>
       </div>
       {login ? (
         <div className="dropdown-end">
@@ -163,7 +163,7 @@ const Navbar = ({ mobile, setMobile, toggleLogin, searchQuery, setSearchQuery, s
               <Link to="/bookings" style={{ textAlign: 'center' }}>Bookings</Link>
               <Link to="/fav" style={{ textAlign: 'center' }}>Favorites</Link>
               <Link to="/records" style={{ textAlign: 'center' }}>Medical Records</Link>
-              <Link>Help</Link>
+              <Link to='/help-support'>help and support</Link>
               <p
                 style={{ color: 'red', marginLeft: '10px', marginTop: '8px', marginBottom: '0px' }}
                 onClick={() => {

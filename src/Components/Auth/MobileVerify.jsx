@@ -10,7 +10,8 @@ function MobileVerify({ toggleMobile,toggleLogin, toggleOtp, setMobileNumber, mo
   const handleSendOtp = async () => {
     setLoading(true);
     try {
-      const response = await fetch("https://server.bookmyappointments.in/api/bma/login", {
+      // const response = await fetch("https://server.bookmyappointments.in/api/bma/login", {
+      const response = await fetch("http://localhost:9999/api/bma/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -54,7 +55,7 @@ const log=()=>{
           onChange={(e) => setMobileNumber(e.target.value)}
           disabled={loading}
         />
-        <button onClick={handleSendOtp} disabled={loading}>
+        <button onClick={handleSendOtp} disabled={loading} style={{width:'auto'}}>
           {loading ? 'Sending...' : 'Proceed'}
         </button>
         

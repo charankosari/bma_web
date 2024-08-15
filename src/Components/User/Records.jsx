@@ -40,6 +40,8 @@ const FileUpload = () => {
   const [loading, setLoading] = useState(true);
   const fileInputRef = useRef(null);
   const imageInputRef = useRef(null);
+  const [deletingFile, setDeletingFile] = useState(null);
+
 
   const handleUpload = async (type) => {
     if (type === "image") {
@@ -51,6 +53,7 @@ const FileUpload = () => {
 
   const handleFileChange = async (event) => {
     const file = event.target.files[0];
+
     if (!file) return;
 
     if (file.size > 2 * 1024 * 1024) {
@@ -62,6 +65,7 @@ const FileUpload = () => {
       alert("Please upload a valid image or PDF file.");
       return;
     }
+    console.log(file);
 
     setUploadingFile(true);
     const jwtToken = localStorage.getItem("jwtToken");
@@ -71,7 +75,8 @@ const FileUpload = () => {
 
     try {
       const response = await fetch(
-        "https://server.bookmyappointments.in/api/bma/upload",
+        // "https://server.bookmyappointments.in/api/bma/upload",
+        "http://localhost:9999/api/bma/upload",
         {
           method: "POST",
           body: formData,
@@ -106,13 +111,13 @@ const FileUpload = () => {
       return;
     }
 
-    setUploadingFile(true);
+    setDeletingFile(filename);
     setDeleteConfirmation(null);
 
     const jwtToken = localStorage.getItem("jwtToken");
     try {
       const response = await fetch(
-        `https://server.bookmyappointments.in/api/bma/delete/${filename}`,
+        `http://localhost:9999/api/bma/delete/${filename}`,
         {
           method: "DELETE",
           headers: {
@@ -129,14 +134,16 @@ const FileUpload = () => {
     } catch (error) {
       console.error("Error deleting file:", error);
     } finally {
-      setUploadingFile(false);
+      setDeletingFile(null);
     }
   };
+
 
   const fetchFiles = async (jwtToken) => {
     try {
       const response = await fetch(
-        "https://server.bookmyappointments.in/api/bma/me",
+        // "https://server.bookmyappointments.in/api/bma/me",
+        "http://localhost:9999/api/bma/me",
         {
           headers: {
             Authorization: `Bearer ${jwtToken}`,
@@ -170,51 +177,87 @@ const FileUpload = () => {
       <Typography variant="h6" align="center" gutterBottom>
         {files.length}/10 files
       </Typography>
-      <Grid container spacing={2}>
-        {loading ? (
+      {loading ? (
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            minHeight: '60vh',
+            width: '100%',
+            textAlign: 'center'
+          }}
+        >
           <CircularProgress />
-        ) : files.length === 0 ? (
-          <Typography sx={{paddingLeft:'10px'}}>No files or images in medical reports</Typography>
-        ) : (
-          files.map((file, index) => (
-            <Grid item xs={12} sm={6} md={4} key={index}>
-              <Card
-                onClick={() => handleViewFile(file)}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  padding: "8px",
+        </Box>
+      ) : files.length === 0 ? (
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            minHeight: '60vh',
+            width: '100%',
+            textAlign: 'center'
+          }}
+        >
+          <Typography>No files or images in medical reports</Typography>
+        </Box>
+      ) : (
+        <Grid container spacing={2}>
+        {files.map((file, index) => (
+          <Grid item xs={12} sm={6} md={4} key={index}>
+            <Card
+              onClick={() => handleViewFile(file)}
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                padding: "8px",
+              }}
+            >
+              <FileIcon sx={{ fontSize: 40, marginRight: "16px" }} />
+              <CardContent
+                sx={{
+                  flex: 1,
+                  padding: 0,
+                  overflow: "hidden", // Prevent content overflow
+                  maxWidth: { xs: "65%", sm: "80%" }, // Adjust width for mobile
                 }}
               >
-                <FileIcon style={{ fontSize: 40, marginRight: "16px" }} />
-                <CardContent style={{ flex: 1, padding: "0" }}>
-                  <Typography
-                    variant="body2"
-                    color="textSecondary"
-                    component="p"
-                    noWrap
-                  >
-                    {file.name}
-                  </Typography>
-                </CardContent>
-                <IconButton
-                  aria-label="delete"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleDelete(file.name);
+                <Typography
+                  variant="body2"
+                  color="textSecondary"
+                  component="p"
+                  noWrap
+                  sx={{
+                    textOverflow: "ellipsis", // Ensure text truncation
+                    overflow: "hidden",
                   }}
                 >
-                  {uploadingFile && deleteConfirmation === file.name ? (
-                    <CircularProgress size={24} />
-                  ) : (
-                    <DeleteIcon />
-                  )}
-                </IconButton>
-              </Card>
-            </Grid>
-          ))
-        )}
+                  {file.name}
+                </Typography>
+              </CardContent>
+              <IconButton
+                aria-label="delete"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleDelete(file.name);
+                }}
+                sx={{ padding: "8px" }}
+              >
+                {deletingFile === file.name ? (
+                  <CircularProgress size={24} />
+                ) : (
+                  <DeleteIcon />
+                )}
+              </IconButton>
+            </Card>
+          </Grid>
+        ))}
       </Grid>
+      
+      )}
+
 
       {showUploadOptions && (
         <Box
@@ -320,7 +363,8 @@ const FileUpload = () => {
                   workerUrl={`https://unpkg.com/pdfjs-dist@3.4.120/build/pdf.worker.min.js`}
                 >
                   <Viewer
-                    fileUrl={`https://server.bookmyappointments.in/api/bma/downloadb?url=${viewingFile.location}`}
+                    // fileUrl={`https://server.bookmyappointments.in/api/bma/downloadb?url=${viewingFile.location}`}
+                    fileUrl={`http://localhost:9999/api/bma/downloadb?url=${viewingFile.location}`}
                     style={{ width: "100%", height: "100%" }}
                   />
                 </Worker>

@@ -2,8 +2,10 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
+    min-height: 100vh;
+    height: auto;
     background-color: #f0f0f0;
+    margin-bottom: 20px;
   }
   
   .help-and-support {
