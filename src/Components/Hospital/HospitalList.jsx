@@ -12,14 +12,12 @@ import {
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import Footer from "../Footer";
-
-// Import images for categories
 import image1 from "../../Assets/image1.png";
 import image2 from "../../Assets/image1.png";
 import image3 from "../../Assets/image1.png";
 import image4 from "../../Assets/image1.png";
 import image5 from "../../Assets/image1.png";
-import defaultImage from "../../Assets/image1.png"; 
+import defaultImage from "../../Assets/image1.png";
 
 const categoryImages = {
   "General Physician": image1,
@@ -99,6 +97,7 @@ const HospitalList = ({
   const [warningMessage, setWarningMessage] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
   const [cat, setCat] = useState([]);
+
 
   useEffect(() => {
     const fetchHospitals = async () => {
@@ -187,13 +186,18 @@ const HospitalList = ({
         const filtered = hospitalsData.filter((hospital) =>
           hospital.location.toLowerCase().includes(area.toLowerCase())
         );
-        if (filtered.length === 0) {
-          setWarningMessage("No hospitals found at your location.");
+        if (filtered.length === 0 && selectedLocation === 'Select location') {
+          setWarningMessage(null);
           setFilteredHospitals(hospitalsData);
+        } else if (filtered.length === 0) {
+          setWarningMessage("No hospitals found in your area");
+          setFilteredHospitals([]);
         } else {
-          setWarningMessage("");
+          setWarningMessage(null);
           setFilteredHospitals(filtered);
         }
+        
+        
       } else {
         console.error("No results found");
       }
@@ -201,27 +205,49 @@ const HospitalList = ({
       console.error("Error fetching area name: ", error);
     }
   };
-
   const filterHospitals = (location) => {
+    if (location === 'Select location') {
+      setWarningMessage(null); 
+      setFilteredHospitals(hospitalsData); 
+      return; 
+    }
+  
     const filtered = hospitalsData.filter((hospital) =>
       hospital.location.toLowerCase().includes(location.toLowerCase())
     );
+  
     if (filtered.length === 0) {
       setWarningMessage("No hospitals found at your selected location.");
       setFilteredHospitals(hospitalsData);
     } else {
-      setWarningMessage("");
+      setWarningMessage(""); 
       setFilteredHospitals(filtered);
     }
   };
+  
 
-  const handleHospitalClick = (hospitalId) => {
-    navigate(`/hospitaldetail/${hospitalId}`);
+  const handleHospitalClick = (hospitalId, taglines) => {
+    navigate(`/hospitaldetail/${hospitalId}`, {
+      state: { taglines }
+    });
   };
+  
 
   const handleCategoryClick = (category) => {
-    setSelectedCategory(category);
+    if (selectedCategory === category) {
+      setSelectedCategory("");
+      setFilteredHospitals(hospitalsData);
+    } else {
+      setSelectedCategory(category);
+      const filtered = hospitalsData.filter((hospital) =>
+        hospital.taglines.some((tagline) =>
+          tagline.toLowerCase().includes(category.toLowerCase())
+        )
+      );
+      setFilteredHospitals(filtered);
+    }
   };
+  
 
   return (
     <>
@@ -270,7 +296,7 @@ const HospitalList = ({
                     onClick={() => handleCategoryClick(category)}
                   >
                     <img
-                      src={categoryImages[category] || defaultImage} // Use default image if category not found
+                      src={categoryImages[category] || defaultImage}
                       alt={category}
                       style={{
                         width: "50px",
@@ -303,30 +329,53 @@ const HospitalList = ({
                       key={hospital.id}
                       sx={{
                         display: "flex",
-                        flexDirection: isMobile ? "column" : "row",
+                        flexDirection: "row",
                         width: "100%",
                         mb: 2,
                         cursor: "pointer",
+                        alignItems: "center",
+                        gap: "10px",
+                        transition: "transform 0.3s ease, background-color 0.3s ease, color 0.3s ease",
+                        backgroundColor: "transparent", 
+                        color: "inherit",
+                        "&:hover": {
+                          backgroundColor: "#2BB673", 
+                          color: "white", 
+                          transform: "scale(1.03)", 
+                        },
                       }}
-                      onClick={() => handleHospitalClick(hospital.id)}
+                      onClick={() => handleHospitalClick(hospital.id,hospital.taglines)}
                     >
                       <CardMedia
                         component="img"
                         sx={{
-                          width: isMobile ? "100%" : 150,
-                          height: 150,
+                          width: isMobile ? "80px" : "120px",
+                          height: isMobile ? "80px" : "120px",
                           objectFit: "cover",
+                          borderRadius: "12px",
+                          padding: "10px",
                         }}
-                        image={hospital.image || defaultImage} // Fallback to default image
+                        image={hospital.image || defaultImage}
                         alt={hospital.name}
                       />
-                      <CardContent>
-                        <Typography variant="h6">{hospital.name}</Typography>
-                        <Typography variant="body2" color="text.secondary">
+                      <CardContent
+                        sx={{
+                          paddingLeft: isMobile ? "8px" : "16px",
+                        }}
+                      >
+                        <Typography variant={isMobile ? "subtitle1" : "h6"}>
+                          {hospital.name}
+                        </Typography>
+                        <Typography
+                          variant={isMobile ? "caption" : "body2"}
+                        >
                           {hospital.location}
                         </Typography>
                         {hospital.taglines.map((tagline, idx) => (
-                          <Typography key={idx} variant="body2">
+                          <Typography
+                            key={idx}
+                            variant={isMobile ? "caption" : "body2"}
+                          >
                             {tagline}
                           </Typography>
                         ))}

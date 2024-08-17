@@ -14,10 +14,13 @@ import {
   useMediaQuery,
 } from "@mui/material";
 import FavoriteIcon from "@mui/icons-material/Favorite";
-import { useLocation, useNavigate,useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import moment from "moment";
 import Footer from "../Footer";
-import { AccessTime as AccessTimeIcon, Cancel as CancelIcon } from '@mui/icons-material';
+import {
+  AccessTime as AccessTimeIcon,
+  Cancel as CancelIcon,
+} from "@mui/icons-material";
 const DoctorScreen = () => {
   const { id } = useParams();
   const location = useLocation();
@@ -39,22 +42,26 @@ const DoctorScreen = () => {
     const fetchDoctorDetails = async () => {
       try {
         const jwtToken = localStorage.getItem("jwtToken"); // Retrieve JWT token from localStorage
-        const response = await fetch(`https://server.bookmyappointments.in/api/bma/getsingledoc/${id}`, {
-          headers: {
-            Authorization: `Bearer ${jwtToken}`, // Use JWT token in request headers
-          },
-        });
-        
+        // const response = await fetch(`https://server.bookmyappointments.in/api/bma/getsingledoc/${id}`, {
+        const response = await fetch(
+          `http://localhost:9999/api/bma/getsingledoc/${id}`,
+          {
+            headers: {
+              Authorization: `Bearer ${jwtToken}`, // Use JWT token in request headers
+            },
+          }
+        );
+
         if (!response.ok) {
           throw new Error("Failed to fetch doctor details");
         }
-        
+
         const data = await response.json();
         const doctor = data.doctor;
-        
+
         setDoctor(doctor);
-        setHospital(location.state.hospital)
-        
+        setHospital(location.state.hospital);
+
         const currentTime = moment();
         const filteredDates = Object.keys(doctor.bookingsids).filter((date) => {
           const dateMoment = moment(date, "DD-MM-YYYY");
@@ -81,14 +88,14 @@ const DoctorScreen = () => {
     };
 
     fetchDoctorDetails();
-  }, [id]); 
-  
+  }, [id]);
 
   useEffect(() => {
     const fetchUserDetails = async () => {
       try {
         const response = await fetch(
-          "https://server.bookmyappointments.in/api/bma/me",
+          // "https://server.bookmyappointments.in/api/bma/me",
+          "http://localhost:9999/api/bma/me",
           {
             headers: {
               Authorization: `Bearer ${localStorage.getItem("jwtToken")}`,
@@ -104,7 +111,8 @@ const DoctorScreen = () => {
     const fetchFavoriteStatus = async () => {
       try {
         const response = await fetch(
-          "https://server.bookmyappointments.in/api/bma/me",
+          // "https://server.bookmyappointments.in/api/bma/me",
+          "http://localhost:9999/api/bma/me",
           {
             headers: {
               Authorization: `Bearer ${localStorage.getItem("jwtToken")}`,
@@ -133,38 +141,38 @@ const DoctorScreen = () => {
   }, [doctor]);
 
   const handleDateSelect = (date) => {
-  setSelectedDate(date);
+    setSelectedDate(date);
 
-  const currentTime = moment(); 
-  const selectedDateMoment = moment(date, "DD-MM-YYYY");
+    const currentTime = moment();
+    const selectedDateMoment = moment(date, "DD-MM-YYYY");
 
-  const availableTimes = [
-    ...doctor.bookingsids[date].morning.map((slot) => ({
-      ...slot,
-      session: "morning",
-    })),
-    ...doctor.bookingsids[date].evening.map((slot) => ({
-      ...slot,
-      session: "evening",
-    })),
-  ].filter((slot) => {
-    const slotTime = moment(slot.time, "HH:mm");
-    const slotDateTime = moment(selectedDateMoment).set({
-      hour: slotTime.hour(),
-      minute: slotTime.minute(),
+    const availableTimes = [
+      ...doctor.bookingsids[date].morning.map((slot) => ({
+        ...slot,
+        session: "morning",
+      })),
+      ...doctor.bookingsids[date].evening.map((slot) => ({
+        ...slot,
+        session: "evening",
+      })),
+    ].filter((slot) => {
+      const slotTime = moment(slot.time, "HH:mm");
+      const slotDateTime = moment(selectedDateMoment).set({
+        hour: slotTime.hour(),
+        minute: slotTime.minute(),
+      });
+
+      return slotDateTime.isAfter(currentTime);
     });
 
-    return slotDateTime.isAfter(currentTime);
-  });
-
-  setTimes(availableTimes);
-};
-
+    setTimes(availableTimes);
+  };
 
   const toggleFavorite = async () => {
     try {
       const response = await fetch(
-        `https://server.bookmyappointments.in/api/bma/me/wishlist/${doctor.id}`,
+        // `https://server.bookmyappointments.in/api/bma/me/wishlist/${doctor.id}`,
+        `http://localhost:9999/api/bma/me/wishlist/${doctor.id}`,
         {
           method: "POST",
           headers: {
@@ -192,22 +200,25 @@ const DoctorScreen = () => {
       return;
     }
     const selectedSlot = doctor.bookingsids[selectedDate].morning
-    .concat(doctor.bookingsids[selectedDate].evening)
-    .find(
-      (slot) =>
-        slot.session === selectedTime.session && slot.time === selectedTime.time
-    );
-    console.log(selectedTime,doctor.bookingsids,doctor)
+      .concat(doctor.bookingsids[selectedDate].evening)
+      .find(
+        (slot) =>
+          slot.session === selectedTime.session &&
+          slot.time === selectedTime.time
+      );
+    console.log(selectedTime, doctor.bookingsids, doctor);
 
-  if (selectedSlot && selectedSlot.booked) {
-    alert("The selected time slot is already booked. Please choose another slot.");
-    return;
-  }
+    if (selectedSlot && selectedSlot.booked) {
+      alert(
+        "The selected time slot is already booked. Please choose another slot."
+      );
+      return;
+    }
 
     const bookingData = {
       doctorId: doctor.id,
       hospitalId: hospital._id,
-      date: moment(selectedDate, 'DD-MM-YYYY').format('YYYY-MM-DD'),
+      date: moment(selectedDate, "DD-MM-YYYY").format("YYYY-MM-DD"),
       time: selectedTime.time,
       session: selectedTime.session,
       name: userDetails.name,
@@ -215,8 +226,7 @@ const DoctorScreen = () => {
       email: userDetails.email,
       amountpaid: doctor.price.consultancyfee + doctor.price.servicefee,
     };
-    navigate('/doctorbooking',{state:{bookingData,hospital,doctor}})
-   
+    navigate("/doctorbooking", { state: { bookingData, hospital, doctor } });
   };
 
   if (loading) {
@@ -240,7 +250,8 @@ const DoctorScreen = () => {
           flexDirection: "column",
           alignItems: "center",
           width: "100%",
-          height: isMobile ? "100%" : "70vh",
+          minHeight: isMobile ? "100%" : "70vh",
+          height: "auto",
           padding: isMobile ? 2 : 4,
         }}
       >
@@ -374,63 +385,60 @@ const DoctorScreen = () => {
             </Box>
 
             {selectedDate && (
-        <Box sx={{ width: "100%", mt: 2 }}>
-          <Typography variant="h6" align="center">
-            Select Time
-          </Typography>
-          <Box
-            sx={{
-              display: "flex",
-              overflowX: "auto",
-              gap: 2,
-              padding: 2,
-            }}
-          >
-            {times.map((time) => (
-              <Card
-                key={time.time}
-                onClick={() => {
-                  if (!time.bookingId) {
-                    setSelectedTime(time);
-                  }
-                }}
-                sx={{
-                  minWidth: isMobile ? 80 : 120,
-                  textAlign: "center",
-                  cursor: time.bookingId ? "not-allowed" : "pointer",
-                  backgroundColor:
-                    selectedTime === time
-                      ? "#2BB673"
-                      : "background.paper",
-                  color:
-                    selectedTime === time
-                      ? "primary.contrastText"
-                      : "text.primary",
-                  opacity: time.bookingId ? 0.5 : 1,
-                }}
-              >
-                <CardContent>
-                <Typography
-                    variant="body2"
-                    sx={{
-                      color: selectedTime === time ? "white" : "#2BB673",
-                      display: "flex",
-                      alignItems: "center",
-                      gap: 1,
-                    }}
-                  >
-                    <AccessTimeIcon sx={{ fontSize: 18 }} />
-                    {time.time}  {time.bookingId && (
-                      "(Booked)"
-                  )}
-                  </Typography>
-                 
-                </CardContent>
-              </Card>
-            ))}
-          </Box>
-        </Box>
-      )}
+              <Box sx={{ width: "100%", mt: 2 }}>
+                <Typography variant="h6" align="center">
+                  Select Time
+                </Typography>
+                <Box
+                  sx={{
+                    display: "flex",
+                    overflowX: "auto",
+                    gap: 2,
+                    padding: 2,
+                  }}
+                >
+                  {times.map((time) => (
+                    <Card
+                      key={time.time}
+                      onClick={() => {
+                        if (!time.bookingId) {
+                          setSelectedTime(time);
+                        }
+                      }}
+                      sx={{
+                        minWidth: isMobile ? 80 : 120,
+                        textAlign: "center",
+                        cursor: "pointer",
+                        backgroundColor:
+                          selectedTime === time
+                            ? "#2BB673"
+                            : "background.paper",
+                        color:
+                          selectedTime === time
+                            ? "primary.contrastText"
+                            : "text.primary",
+                        opacity: time.bookingId ? 0.5 : 1,
+                      }}
+                    >
+                      <CardContent>
+                        <Typography
+                          variant="body2"
+                          sx={{
+                            color:
+                              selectedTime === time.time ? "white" : "#2BB673",
+                            display: "flex",
+                            alignItems: "center",
+                            gap: 1,
+                          }}
+                        >
+                          {time.bookingId ? `${time.time} (Booked)` : time.time}
+                        </Typography>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </Box>
+              </Box>
+            )}
 
             <Button
               variant="contained"
@@ -440,7 +448,7 @@ const DoctorScreen = () => {
                 width: "250px",
                 backgroundColor: "#2BB673",
                 "&:hover": {
-                  backgroundColor: "#239c5f", // Darker shade of #2BB673
+                  backgroundColor: "#239c5f",
                 },
               }}
             >
@@ -448,12 +456,20 @@ const DoctorScreen = () => {
             </Button>
           </>
         )}
-<Snackbar open={!!snackbarMessage} autoHideDuration={6000} onClose={() => setSnackbarMessage('')}>
-  <Alert onClose={() => setSnackbarMessage('')} severity="success" variant="filled" sx={{ width: '100%' }}>
-    {snackbarMessage}
-  </Alert>
-</Snackbar>
-
+        <Snackbar
+          open={!!snackbarMessage}
+          autoHideDuration={6000}
+          onClose={() => setSnackbarMessage("")}
+        >
+          <Alert
+            onClose={() => setSnackbarMessage("")}
+            severity="success"
+            variant="filled"
+            sx={{ width: "100%" }}
+          >
+            {snackbarMessage}
+          </Alert>
+        </Snackbar>
       </Box>
       <Footer />
     </>

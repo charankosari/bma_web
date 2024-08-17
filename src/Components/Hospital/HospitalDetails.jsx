@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useLocation } from "react-router-dom";
 import {
   Box,
   Typography,
@@ -16,10 +16,17 @@ import {
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import Footer from "../Footer";
 import moment from "moment";
-import doctorimg from '../../Assets/image1.png';
+import doctorimg from "../../Assets/image1.png";
 
-const HospitalDetailsPage = ({ login, toggleLogin, mobile, setMobile, searchQuery }) => {
+const HospitalDetailsPage = ({
+  login,
+  toggleLogin,
+  mobile,
+  setMobile,
+  searchQuery,
+}) => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { id: hospitalId } = useParams();
   const [hospital, setHospital] = useState(null);
   const [doctors, setDoctors] = useState([]);
@@ -29,11 +36,15 @@ const HospitalDetailsPage = ({ login, toggleLogin, mobile, setMobile, searchQuer
   const [selectedCategory, setSelectedCategory] = useState(null);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const { taglines } = location.state;
 
   useEffect(() => {
     const fetchHospitalDetails = async () => {
       try {
-        const response = await fetch(`https://server.bookmyappointments.in/api/bma/user/doctors/${hospitalId}`);
+        // const response = await fetch(`https://server.bookmyappointments.in/api/bma/user/doctors/${hospitalId}`);
+        const response = await fetch(
+          `http://localhost:9999/api/bma/user/doctors/${hospitalId}`
+        );
         const data = await response.json();
         setHospital(data.hospital);
         setDoctors(data.hospital.doctors);
@@ -48,13 +59,18 @@ const HospitalDetailsPage = ({ login, toggleLogin, mobile, setMobile, searchQuer
   }, [hospitalId]);
 
   useEffect(() => {
-    const filtered = doctors.filter((doctor) =>
-      (doctor.name && doctor.name.toLowerCase().includes(searchQuery?.toLowerCase())) ||
-      (doctor.specialist && doctor.specialist.toLowerCase().includes(searchQuery?.toLowerCase()))
+    const filtered = doctors.filter(
+      (doctor) =>
+        (doctor.name &&
+          doctor.name.toLowerCase().includes(searchQuery?.toLowerCase())) ||
+        (doctor.specialist &&
+          doctor.specialist.toLowerCase().includes(searchQuery?.toLowerCase()))
     );
 
     if (selectedCategory) {
-      setFilteredDoctors(filtered.filter(doctor => doctor.specialist === selectedCategory));
+      setFilteredDoctors(
+        filtered.filter((doctor) => doctor.specialist === selectedCategory)
+      );
     } else {
       setFilteredDoctors(filtered);
     }
@@ -63,7 +79,8 @@ const HospitalDetailsPage = ({ login, toggleLogin, mobile, setMobile, searchQuer
   useEffect(() => {
     const fetchFavorites = async () => {
       try {
-        const response = await fetch("https://server.bookmyappointments.in/api/bma/me", {
+        // const response = await fetch("https://server.bookmyappointments.in/api/bma/me", {
+        const response = await fetch("http://localhost:9999/api/bma/me", {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("jwtToken")}`,
           },
@@ -86,8 +103,7 @@ const HospitalDetailsPage = ({ login, toggleLogin, mobile, setMobile, searchQuer
   };
 
   const filteredDoctorsList = filteredDoctors.filter(
-    (doctor) =>
-      doctor.specialist && hasFutureBookings(doctor.bookingsids)
+    (doctor) => doctor.specialist && hasFutureBookings(doctor.bookingsids)
   );
 
   const handleDoctorCardClick = (doctor) => {
@@ -119,51 +135,56 @@ const HospitalDetailsPage = ({ login, toggleLogin, mobile, setMobile, searchQuer
               <>
                 <Box sx={{ textAlign: "center", mb: 4 }}>
                   <Typography variant="h4" component="h1" gutterBottom>
-                    {hospital.hospitalName.charAt(0).toUpperCase() + hospital.hospitalName.slice(1)}
+                    {hospital.hospitalName.charAt(0).toUpperCase() +
+                      hospital.hospitalName.slice(1)}
                   </Typography>
                 </Box>
                 <Box
                   sx={{
-                    overflowX: 'auto',
-                    whiteSpace: 'nowrap',
+                    overflowX: "auto",
+                    whiteSpace: "nowrap",
                     mb: 4,
-                    display: 'flex',
+                    display: "flex",
                     gap: 2,
                     padding: 1,
                   }}
                 >
-                  {hospital.category.map((category, index) => (
+                  {taglines.map((tagline, index) => (
                     <Box
                       key={index}
                       sx={{
-                        display: 'flex',
-                        flexDirection: 'column',
-                        padding: 1, 
-                        cursor: 'pointer',
-                        border: '1px solid',
+                        display: "flex",
+                        flexDirection: "column",
+                        padding: 1,
+                        cursor: "pointer",
+                        border: "2px solid",
                         borderRadius: 1,
-                        textAlign: 'center',
-                        alignItems:'center' ,
-                        justifyContent: 'center',
-                        backgroundColor: selectedCategory === category.types ? '#e0f7fa' : '#fff',
-                        borderColor: selectedCategory === category.types ? '#00bcd4' : '#ccc',
-                        width: 100, 
+                        textAlign: "center",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        borderColor:
+                          selectedCategory === tagline ? "#2BB673" : "#ccc",
+                        width: 100,
                       }}
-                      onClick={() => setSelectedCategory(category.types)}
+                      onClick={() => {
+                        setSelectedCategory(
+                          selectedCategory === tagline ? null : tagline
+                        );
+                      }}
                     >
                       <CardMedia
                         component="img"
                         sx={{
-                          width: 50, 
-                          height: 50, 
-                          objectFit: 'cover',
-                          borderRadius: '5px',
+                          width: 50,
+                          height: 50,
+                          objectFit: "cover",
+                          borderRadius: "5px",
                         }}
                         image={doctorimg}
-                        alt={category.types}
+                        alt={tagline}
                       />
-                      <Typography variant="body2" sx={{ mt: 0.5 }}> 
-                        {category.types}
+                      <Typography variant="body2" sx={{ mt: 0.5 }}>
+                        {tagline}
                       </Typography>
                     </Box>
                   ))}
@@ -181,10 +202,16 @@ const HospitalDetailsPage = ({ login, toggleLogin, mobile, setMobile, searchQuer
                             display: "flex",
                             alignItems: "center",
                             padding: isMobile ? 1 : 2,
-                            '&:hover': {
-                              cursor: 'pointer',
-                              backgroundColor: '#2BB673',
-                            }
+                            transition:
+                              "transform 0.3s ease, background-color 0.3s ease, color 0.3s ease",
+                            backgroundColor: "transparent",
+                            color: "inherit",
+                            "&:hover": {
+                              backgroundColor: "#2BB673",
+                              color: "white",
+                              transform: "scale(1.03)",
+                            },
+                            cursor: "pointer",
                           }}
                           onClick={() => handleDoctorCardClick(doctor)}
                         >
@@ -192,9 +219,21 @@ const HospitalDetailsPage = ({ login, toggleLogin, mobile, setMobile, searchQuer
                             <CardMedia
                               component="img"
                               sx={{
-                                width: isMobile ? 80 : 100,
-                                height: isMobile ? 80 : 100,
-                                borderRadius: "5px"
+                                width: {
+                                  xs: 80,
+                                  sm: 90,
+                                  md: 100,
+                                  lg: 110,
+                                  xl: 120,
+                                },
+                                height: {
+                                  xs: 80,
+                                  sm: 90,
+                                  md: 100,
+                                  lg: 110,
+                                  xl: 120,
+                                },
+                                borderRadius: "5px",
                               }}
                               image={doctor.image}
                               alt={doctor.name}
@@ -202,30 +241,73 @@ const HospitalDetailsPage = ({ login, toggleLogin, mobile, setMobile, searchQuer
                           ) : (
                             <Box
                               sx={{
-                                width: isMobile ? 80 : 100,
-                                height: isMobile ? 80 : 100,
+                                width: {
+                                  xs: 80,
+                                  sm: 90,
+                                  md: 100,
+                                  lg: 110,
+                                  xl: 120,
+                                },
+                                height: {
+                                  xs: 80,
+                                  sm: 90,
+                                  md: 100,
+                                  lg: 110,
+                                  xl: 120,
+                                },
                                 borderRadius: "50%",
                                 display: "flex",
-                                alignItems: "center",
-                                justifyContent: "center",
                                 backgroundColor: "#e0e0e0",
-                                fontSize: 40,
+                                fontSize: {
+                                  xs: 30,
+                                  sm: 35,
+                                  md: 40,
+                                  lg: 45,
+                                  xl: 50,
+                                },
                               }}
                             >
                               {doctor.name.charAt(0)}
                             </Box>
                           )}
                           <CardContent sx={{ flexGrow: 1, marginLeft: 2 }}>
-                            <Typography variant="h6" component="div">
+                            <Typography
+                              variant="h6"
+                              component="div"
+                              sx={{
+                                fontSize: {
+                                  xs: "1rem",
+                                  sm: "1.2rem",
+                                  md: "1.4rem",
+                                  lg: "1.6rem",
+                                  xl: "1.8rem",
+                                },
+                              }}
+                            >
                               {doctor.name}
                             </Typography>
-                            <Typography variant="body2" color="textSecondary">
+                            <Typography
+                              variant="body2"
+                              sx={{
+                                fontSize: {
+                                  xs: "0.8rem",
+                                  sm: "0.9rem",
+                                  md: "1rem",
+                                  lg: "1.1rem",
+                                  xl: "1.2rem",
+                                },
+                              }}
+                            >
                               {doctor.specialist}
                             </Typography>
                           </CardContent>
-                          {favorites?.includes(doctor._id) && (
-                            <IconButton color="secondary">
-                              <FavoriteIcon />
+                          {favorites?.includes(doctor._id) ? (
+                            <IconButton color="error">
+                              <FavoriteIcon sx={{ color: "red" }} />
+                            </IconButton>
+                          ) : (
+                            <IconButton color="default">
+                              <FavoriteIcon sx={{ color: "grey" }} />
                             </IconButton>
                           )}
                         </Card>
