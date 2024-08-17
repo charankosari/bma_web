@@ -40,9 +40,9 @@ const userid=sessionStorage.getItem('userid')
 
       if (data.success) {
         localStorage.setItem('jwtToken', data.jwtToken);
-        Log(true); 
         toggleLogin();
         toggleOtp();
+        // Log(true); 
         window.location.reload();
         navigate('/');  
       } else {

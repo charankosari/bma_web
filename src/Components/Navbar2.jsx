@@ -6,7 +6,7 @@ import Avatar from 'react-avatar';
 import logo from '../Assets/logo.png';
 import './Navbar.css';
 
-const Navbar = ({ mobile, setMobile, toggleLogin, searchQuery, setSearchQuery, selectedLocation, setSelectedLocation }) => {
+const Navbar = ({ mobile, setMobile, toggleLogin, searchQuery, setSearchQuery,  setSelectedLocation }) => {
   const [currentLocation, setCurrentLocation] = useState(null);
   const [areaName, setAreaName] = useState('');
   const [isLocationDropdownOpen, setIsLocationDropdownOpen] = useState(false);
@@ -15,29 +15,19 @@ const Navbar = ({ mobile, setMobile, toggleLogin, searchQuery, setSearchQuery, s
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    const storedLocation = localStorage.getItem('selectedLocation');
-    if (storedLocation && storedLocation !== 'Current Location') {
-      setSelectedLocation(storedLocation);
-      setAreaName(storedLocation);
-    } else {
-      setSelectedLocation('Select location');
-    }
-
     const token = localStorage.getItem('jwtToken');
     if (token) {
       setLogin(true);
     }
-
-    handleSelectCurrentLocation();
   }, []);
 
-  useEffect(() => {
-    if (selectedLocation && selectedLocation !== 'Select location') {
-      setAreaName(selectedLocation);
-    } else if (selectedLocation === 'Current Location' && currentLocation) {
-      fetchAreaName(currentLocation.latitude, currentLocation.longitude);
-    }
-  }, [selectedLocation, currentLocation]);
+  // useEffect(() => {
+  //   if (selectedLocation && selectedLocation !== 'Select location') {
+  //     setAreaName(selectedLocation);
+  //   } else if (selectedLocation === 'Current Location' && currentLocation) {
+  //     fetchAreaName(currentLocation.latitude, currentLocation.longitude);
+  //   }
+  // }, [selectedLocation, currentLocation]);
 
   useEffect(() => {
   }, [searchQuery]);
