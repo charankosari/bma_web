@@ -26,6 +26,7 @@ L.Icon.Default.mergeOptions({
   shadowUrl:
     "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png",
 });
+const url = "http://localhost:9999";
 
 const SuccessScreen = () => {
   const navigate = useNavigate();
@@ -54,7 +55,7 @@ const SuccessScreen = () => {
         color="primary"
         onClick={() => {
           navigate("/bookings", { replace: true });
-        }} 
+        }}
       >
         Go to Bookings
       </Button>
@@ -65,7 +66,7 @@ const SuccessScreen = () => {
 const BookingScreen = () => {
   const location = useLocation();
   const [loading, setLoading] = useState(false);
-  const [bookingConfirmed, setBookingConfirmed] = useState(false); 
+  const [bookingConfirmed, setBookingConfirmed] = useState(false);
   const { bookingData, hospital, test } = location.state;
   const { date, time, name, amountpaid } = bookingData;
   const { latitude, longitude } = hospital.address;
@@ -74,7 +75,7 @@ const BookingScreen = () => {
     const googleMapsUrl = `https://www.google.com/maps/search/?api=1&query=${latitude},${longitude}`;
     window.open(googleMapsUrl, "_blank");
   };
-
+  console.log(hospital);
   const handleCheckout = async () => {
     setLoading(true);
     try {
@@ -83,6 +84,7 @@ const BookingScreen = () => {
         hospitalId: test.hospitalid,
       };
       const response = await fetch(
+        // "https://server.bookmyappointments.in/api/bma/addlabbooking",
         "https://server.bookmyappointments.in/api/bma/addlabbooking",
         {
           method: "POST",
@@ -111,147 +113,156 @@ const BookingScreen = () => {
   }
 
   return (
-    <>  
-    <Box sx={{ padding: 3 }}>
-      <Card
-        sx={{ padding: 3, borderRadius: "15px", backgroundColor: "#f5f5f5" }}
-      >
-        <CardContent>
-          <Grid container spacing={3}>
-            <Grid item xs={12} md={8}>
-              <Typography variant="h4" sx={{ mb: 2 }}>
-                Booking date and time
-              </Typography>
-              <Typography variant="body1" sx={{ mb: 2 }}>
-                {new Date(date).toDateString()} {time}
-              </Typography>
-              <Typography variant="h5" sx={{ my: 3 }}>
-                50% of Our Profits are used for Orphan Children Health Care
-              </Typography>
+    <>
+      <Box sx={{ padding: 3 }}>
+        <Card
+          sx={{ padding: 3, borderRadius: "15px", backgroundColor: "#f5f5f5" }}
+        >
+          <CardContent>
+            <Grid container spacing={3}>
+              <Grid item xs={12} md={8}>
+                <Typography variant="h4" sx={{ mb: 2 }}>
+                  Booking date and time
+                </Typography>
+                <Typography variant="body1" sx={{ mb: 2 }}>
+                  {new Date(date).toDateString()} {time}
+                </Typography>
+                <Typography variant="h5" sx={{ my: 3 }}>
+                  50% of Our Profits are used for Orphan Children Health Care
+                </Typography>
 
-              <Divider sx={{ my: 2 }} />
+                <Divider sx={{ my: 2 }} />
 
-              <Typography variant="h6" sx={{ mb: 2 }}>
-                Location
-              </Typography>
-              <Box
-                sx={{
-                  height: "300px",
-                  width: "100%",
-                  mb: 2,
-                  position: "relative",
-                }}
-              >
-                <MapContainer
-                  center={[latitude, longitude]}
-                  zoom={15}
-                  style={{ height: "100%", borderRadius: "10px" }}
-                >
-                  <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-                  <Marker position={[latitude, longitude]}>
-                    <Popup>
-                      {hospital.name} <br /> {test.name}
-                    </Popup>
-                  </Marker>
-                </MapContainer>
-                <Button
-                  variant="contained"
-                  color="primary"
-                  onClick={handleViewOnGoogleMaps}
+                <Typography variant="h6" sx={{ mb: 2 }}>
+                  Location
+                </Typography>
+                <Box
                   sx={{
-                    position: "absolute",
-                    top: 10,
-                    right: 10,
-                    zIndex: "999",
+                    height: "300px",
+                    width: "100%",
+                    mb: 2,
+                    position: "relative",
                   }}
                 >
-                  View on Google Maps
-                </Button>
-              </Box>
+                  <MapContainer
+                    center={[latitude, longitude]}
+                    zoom={15}
+                    style={{ height: "100%", borderRadius: "10px" }}
+                  >
+                    <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+                    <Marker position={[latitude, longitude]}>
+                      <Popup>
+                        {hospital.name} <br /> {test.name}
+                      </Popup>
+                    </Marker>
+                  </MapContainer>
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={handleViewOnGoogleMaps}
+                    sx={{
+                      position: "absolute",
+                      top: 10,
+                      right: 10,
+                      zIndex: "999",
+                    }}
+                  >
+                    View on Google Maps
+                  </Button>
+                </Box>
 
-              <Divider sx={{ my: 2 }} />
-            </Grid>
+                <Divider sx={{ my: 2 }} />
+              </Grid>
 
-            <Grid item xs={12} md={4}>
-              <Typography variant="h6" sx={{ mb: 2 }}>
-                Booking Details
-              </Typography>
-              <Typography variant="body2" sx={{ mb: 1 ,textTransform:'capitalize'}}>
-                Hospital: {hospital.name}
-              </Typography>
-              <Typography variant="body2" sx={{ mb: 1  ,textTransform:'capitalize'}}>
-                Test: {test.name}
-              </Typography>
-            
+              <Grid item xs={12} md={4}>
+                <Typography variant="h6" sx={{ mb: 2 }}>
+                  Booking Details
+                </Typography>
+                <Typography
+                  variant="body2"
+                  sx={{ mb: 1, textTransform: "capitalize" }}
+                >
+                  Hospital: {hospital.name}
+                </Typography>
+                <Typography
+                  variant="body2"
+                  sx={{ mb: 1, textTransform: "capitalize" }}
+                >
+                  Test: {test.name}
+                </Typography>
 
-              <Divider sx={{ my: 2 }} />
+                <Divider sx={{ my: 2 }} />
 
-              <Box
-                sx={{ display: "flex", justifyContent: "space-between", mb: 2 }}
-              >
-                <TextField
-                  variant="outlined"
-                  label="Coupon"
-                  size="small"
-                  sx={{ flexGrow: 1, mr: 2 }}
-                />
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    mb: 2,
+                  }}
+                >
+                  <TextField
+                    variant="outlined"
+                    label="Coupon"
+                    size="small"
+                    sx={{ flexGrow: 1, mr: 2 }}
+                  />
+                  <Button
+                    variant="contained"
+                    color="success"
+                    sx={{ height: "40px" }}
+                  >
+                    APPLY
+                  </Button>
+                </Box>
+
+                <Box sx={{ mb: 3 }}>
+                  <Typography variant="h6" sx={{ mb: 1 }}>
+                    Bill Details
+                  </Typography>
+                  <Grid container>
+                    <Grid item xs={6}>
+                      <Typography>Consultation Fee</Typography>
+                    </Grid>
+                    <Grid item xs={6}>
+                      <Typography align="right">₹ {consultancyfee}</Typography>
+                    </Grid>
+                  </Grid>
+                  <Grid container>
+                    <Grid item xs={6}>
+                      <Typography>Service Fee and Tax</Typography>
+                    </Grid>
+                    <Grid item xs={6}>
+                      <Typography align="right">₹ {servicefee}</Typography>
+                    </Grid>
+                  </Grid>
+                  <Divider sx={{ my: 1 }} />
+                  <Grid container>
+                    <Grid item xs={6}>
+                      <Typography variant="h6">Total amount</Typography>
+                    </Grid>
+                    <Grid item xs={6}>
+                      <Typography align="right" variant="h6">
+                        ₹ {amountpaid}
+                      </Typography>
+                    </Grid>
+                  </Grid>
+                </Box>
+
                 <Button
                   variant="contained"
                   color="success"
-                  sx={{ height: "40px" }}
+                  sx={{ width: "100%", height: "50px", borderRadius: "25px" }}
+                  onClick={handleCheckout}
+                  disabled={loading}
                 >
-                  APPLY
+                  {loading ? <CircularProgress size={24} /> : "CheckOut"}
                 </Button>
-              </Box>
-
-              <Box sx={{ mb: 3 }}>
-                <Typography variant="h6" sx={{ mb: 1 }}>
-                  Bill Details
-                </Typography>
-                <Grid container>
-                  <Grid item xs={6}>
-                    <Typography>Consultation Fee</Typography>
-                  </Grid>
-                  <Grid item xs={6}>
-                    <Typography align="right">₹ {consultancyfee}</Typography>
-                  </Grid>
-                </Grid>
-                <Grid container>
-                  <Grid item xs={6}>
-                    <Typography>Service Fee and Tax</Typography>
-                  </Grid>
-                  <Grid item xs={6}>
-                    <Typography align="right">₹ {servicefee}</Typography>
-                  </Grid>
-                </Grid>
-                <Divider sx={{ my: 1 }} />
-                <Grid container>
-                  <Grid item xs={6}>
-                    <Typography variant="h6">Total amount</Typography>
-                  </Grid>
-                  <Grid item xs={6}>
-                    <Typography align="right" variant="h6">
-                      ₹ {amountpaid}
-                    </Typography>
-                  </Grid>
-                </Grid>
-              </Box>
-
-              <Button
-                variant="contained"
-                color="success"
-                sx={{ width: "100%", height: "50px", borderRadius: "25px" }}
-                onClick={handleCheckout}
-                disabled={loading}
-              >
-                {loading ? <CircularProgress size={24} /> : "CheckOut"}
-              </Button>
+              </Grid>
             </Grid>
-          </Grid>
-        </CardContent>
-      </Card>
-    </Box>
-    <Footer/>
+          </CardContent>
+        </Card>
+      </Box>
+      <Footer />
     </>
   );
 };

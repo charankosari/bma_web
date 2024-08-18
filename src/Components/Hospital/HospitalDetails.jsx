@@ -107,12 +107,19 @@ const HospitalDetailsPage = ({
   );
 
   const handleDoctorCardClick = (doctor) => {
-    navigate(`/doctor/${doctor._id}`, {
-      state: {
-        doctor,
-        hospital,
-      },
-    });
+    const token = localStorage.getItem("jwtToken");
+
+    if (!token) {
+      alert("You must be logged in to view this page.");
+      navigate("/");
+    } else {
+      navigate(`/doctor/${doctor._id}`, {
+        state: {
+          doctor,
+          hospital,
+        },
+      });
+    }
   };
 
   return (

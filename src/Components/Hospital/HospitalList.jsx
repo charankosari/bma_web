@@ -98,7 +98,6 @@ const HospitalList = ({
   const [selectedCategory, setSelectedCategory] = useState("");
   const [cat, setCat] = useState([]);
 
-
   useEffect(() => {
     const fetchHospitals = async () => {
       try {
@@ -186,7 +185,7 @@ const HospitalList = ({
         const filtered = hospitalsData.filter((hospital) =>
           hospital.location.toLowerCase().includes(area.toLowerCase())
         );
-        if (filtered.length === 0 && selectedLocation === 'Select location') {
+        if (filtered.length === 0 && selectedLocation === "Select location") {
           setWarningMessage(null);
           setFilteredHospitals(hospitalsData);
         } else if (filtered.length === 0) {
@@ -196,8 +195,6 @@ const HospitalList = ({
           setWarningMessage(null);
           setFilteredHospitals(filtered);
         }
-        
-        
       } else {
         console.error("No results found");
       }
@@ -206,32 +203,30 @@ const HospitalList = ({
     }
   };
   const filterHospitals = (location) => {
-    if (location === 'Select location') {
-      setWarningMessage(null); 
-      setFilteredHospitals(hospitalsData); 
-      return; 
+    if (location === "Select location") {
+      setWarningMessage(null);
+      setFilteredHospitals(hospitalsData);
+      return;
     }
-  
+
     const filtered = hospitalsData.filter((hospital) =>
       hospital.location.toLowerCase().includes(location.toLowerCase())
     );
-  
+
     if (filtered.length === 0) {
       setWarningMessage("No hospitals found at your selected location.");
       setFilteredHospitals(hospitalsData);
     } else {
-      setWarningMessage(""); 
+      setWarningMessage("");
       setFilteredHospitals(filtered);
     }
   };
-  
 
   const handleHospitalClick = (hospitalId, taglines) => {
     navigate(`/hospitaldetail/${hospitalId}`, {
-      state: { taglines }
+      state: { taglines },
     });
   };
-  
 
   const handleCategoryClick = (category) => {
     if (selectedCategory === category) {
@@ -247,7 +242,6 @@ const HospitalList = ({
       setFilteredHospitals(filtered);
     }
   };
-  
 
   return (
     <>
@@ -273,6 +267,10 @@ const HospitalList = ({
                   display: "flex",
                   overflowX: "auto",
                   whiteSpace: "nowrap",
+                  width: "100%",
+                  marginLeft: "10px",
+                  gap: "5px",
+                  marginBottom: "15px",
                 }}
               >
                 {cat.map((category, index) => (
@@ -281,17 +279,16 @@ const HospitalList = ({
                     sx={{
                       display: "flex",
                       flexDirection: "column",
-                      textAlign: "center",
+                      padding: 1,
                       cursor: "pointer",
-                      borderRadius: "8px",
-                      justifyContent: "center",
+                      border: "2px solid",
+                      borderRadius: 1,
+                      textAlign: "center",
                       alignItems: "center",
-                      overflow: "hidden",
-                      padding: "5px",
-                      border:
-                        selectedCategory === category
-                          ? "2px solid #2bb673"
-                          : "none",
+                      justifyContent: "center",
+                      borderColor:
+                        selectedCategory === category ? "#2BB673" : "#ccc",
+                      width: 100,
                     }}
                     onClick={() => handleCategoryClick(category)}
                   >
@@ -335,16 +332,19 @@ const HospitalList = ({
                         cursor: "pointer",
                         alignItems: "center",
                         gap: "10px",
-                        transition: "transform 0.3s ease, background-color 0.3s ease, color 0.3s ease",
-                        backgroundColor: "transparent", 
+                        transition:
+                          "transform 0.3s ease, background-color 0.3s ease, color 0.3s ease",
+                        backgroundColor: "transparent",
                         color: "inherit",
                         "&:hover": {
-                          backgroundColor: "#2BB673", 
-                          color: "white", 
-                          transform: "scale(1.03)", 
+                          backgroundColor: "#2BB673",
+                          color: "white",
+                          transform: "scale(1.03)",
                         },
                       }}
-                      onClick={() => handleHospitalClick(hospital.id,hospital.taglines)}
+                      onClick={() =>
+                        handleHospitalClick(hospital.id, hospital.taglines)
+                      }
                     >
                       <CardMedia
                         component="img"
@@ -366,19 +366,9 @@ const HospitalList = ({
                         <Typography variant={isMobile ? "subtitle1" : "h6"}>
                           {hospital.name}
                         </Typography>
-                        <Typography
-                          variant={isMobile ? "caption" : "body2"}
-                        >
+                        <Typography variant={isMobile ? "caption" : "body2"}>
                           {hospital.location}
                         </Typography>
-                        {hospital.taglines.map((tagline, idx) => (
-                          <Typography
-                            key={idx}
-                            variant={isMobile ? "caption" : "body2"}
-                          >
-                            {tagline}
-                          </Typography>
-                        ))}
                       </CardContent>
                     </Card>
                   ))

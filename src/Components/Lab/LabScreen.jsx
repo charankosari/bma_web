@@ -17,7 +17,10 @@ import FavoriteIcon from "@mui/icons-material/Favorite";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import moment from "moment";
 import Footer from "../Footer";
-import { AccessTime as AccessTimeIcon, Cancel as CancelIcon } from '@mui/icons-material';
+import {
+  AccessTime as AccessTimeIcon,
+  Cancel as CancelIcon,
+} from "@mui/icons-material";
 
 const LabScreen = () => {
   const { id } = useParams();
@@ -36,24 +39,25 @@ const LabScreen = () => {
   const [times, setTimes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [snackbarMessage, setSnackbarMessage] = useState("");
+  const url = "http://localhost:9999";
 
   useEffect(() => {
     const fetchTestDetails = async () => {
       try {
         const jwtToken = localStorage.getItem("jwtToken");
-        const response = await fetch(`https://server.bookmyappointments.in/api/bma/getsinglelab/${id}`, {
+        const response = await fetch(`${url}/api/bma/getsinglelab/${id}`, {
           headers: {
             Authorization: `Bearer ${jwtToken}`,
           },
         });
-        
+
         if (!response.ok) {
           throw new Error("Failed to fetch test details");
         }
-        
+
         const data = await response.json();
         const test = data.lab;
-        
+
         setTest(test);
         setHospital(location.state.hospital);
         const currentTime = moment();
@@ -82,19 +86,16 @@ const LabScreen = () => {
     };
 
     fetchTestDetails();
-  }, [id, location.state.hospital]); 
+  }, [id, location.state.hospital]);
 
   useEffect(() => {
     const fetchUserDetails = async () => {
       try {
-        const response = await fetch(
-          "https://server.bookmyappointments.in/api/bma/me",
-          {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("jwtToken")}`,
-            },
-          }
-        );
+        const response = await fetch(`${url}/api/bma/me`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("jwtToken")}`,
+          },
+        });
         const data = await response.json();
         setUserDetails(data.user);
       } catch (error) {
@@ -104,14 +105,11 @@ const LabScreen = () => {
 
     const fetchFavoriteStatus = async () => {
       try {
-        const response = await fetch(
-          "https://server.bookmyappointments.in/api/bma/me",
-          {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("jwtToken")}`,
-            },
-          }
-        );
+        const response = await fetch(`${url}/api/bma/me`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("jwtToken")}`,
+          },
+        });
         if (response.ok) {
           const data = await response.json();
           const wishList = data.user.wishList;
@@ -162,17 +160,14 @@ const LabScreen = () => {
 
   const toggleFavorite = async () => {
     try {
-      const response = await fetch(
-        `https://server.bookmyappointments.in/api/bma/me/wishlist/${test.id}`,
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("jwtToken")}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ type: "test" }),
-        }
-      );
+      const response = await fetch(`${url}api/bma/me/wishlist/${test.id}`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("jwtToken")}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ type: "test" }),
+      });
       if (response.ok) {
         const message = isFavorite
           ? "Removed from favorites"
@@ -195,18 +190,21 @@ const LabScreen = () => {
       .concat(test.bookingsids[selectedDate].evening)
       .find(
         (slot) =>
-          slot.session === selectedTime.session && slot.time === selectedTime.time
+          slot.session === selectedTime.session &&
+          slot.time === selectedTime.time
       );
 
     if (selectedSlot && selectedSlot.booked) {
-      alert("The selected time slot is already booked. Please choose another slot.");
+      alert(
+        "The selected time slot is already booked. Please choose another slot."
+      );
       return;
     }
 
     const bookingData = {
       testId: test.id,
       hospitalId: hospital._id,
-      date: moment(selectedDate, 'DD-MM-YYYY').format('YYYY-MM-DD'),
+      date: moment(selectedDate, "DD-MM-YYYY").format("YYYY-MM-DD"),
       time: selectedTime.time,
       session: selectedTime.session,
       name: userDetails.name,
@@ -214,7 +212,7 @@ const LabScreen = () => {
       email: userDetails.email,
       amountpaid: test.price.consultancyfee + test.price.servicefee,
     };
-    navigate('/labbooking', { state: { bookingData, hospital, test } });
+    navigate("/labbooking", { state: { bookingData, hospital, test } });
   };
 
   if (loading) {
@@ -296,49 +294,234 @@ const LabScreen = () => {
                   textAlign: isMobile ? "center" : "left",
                 }}
               >
-                <CardContent>
-                  <Typography variant="h5" gutterBottom>
-                    {test.name}
-                  </Typography>
-                  <Typography variant="subtitle1" color="textSecondary">
-                    Hospital: {hospital.hospitalName}
-                  </Typography>
-                  <Typography variant="subtitle1" color="textSecondary">
-                    Consultancy Fee: ${test.price.consultancyfee}
-                  </Typography>
-                  <Typography variant="subtitle1" color="textSecondary">
-                    Service Fee: ${test.price.servicefee}
-                  </Typography>
-                  <Typography variant="subtitle1" color="textSecondary">
-                    Total Fee: $
-                    {test.price.consultancyfee + test.price.servicefee}
-                  </Typography>
-                </CardContent>
+                <Typography
+                  variant="h6"
+                  sx={{ textTransform: "capitalize", color: "text.primary" }}
+                >
+                  Test: {test.name}
+                </Typography>
+                <Typography
+                  variant="h6"
+                  sx={{ textTransform: "capitalize", color: "text.primary" }}
+                >
+                  Hospital: {hospital.name}
+                </Typography>
+                {/* <Typography
+                 variant="subtitle1"
+                 sx={{ textTransform: "capitalize", color: "text.secondary" }}
+               >
+                 Speciality: {doctor.specialist}
+               </Typography> */}
               </Box>
               <IconButton
-                onClick={toggleFavorite}
                 sx={{
                   position: "absolute",
-                  top: 8,
-                  right: 8,
-                  backgroundColor: "rgba(255,255,255,0.8)",
-                  borderRadius: "50%",
-                  boxShadow: "0px 2px 4px rgba(0,0,0,0.1)",
-                  "&:hover": {
-                    backgroundColor: "rgba(255,255,255,1)",
-                  },
+                  top: 10,
+                  right: 10,
+                  color: isFavorite ? "red" : "default",
                 }}
+                onClick={toggleFavorite}
               >
-                <FavoriteIcon
-                  color={isFavorite ? "error" : "disabled"}
-                  fontSize="large"
-                />
+                <FavoriteIcon />
               </IconButton>
             </Card>
+
+            <Box sx={{ width: "100%", mt: 2 }}>
+              <Typography variant="h6" align="center">
+                Select Date
+              </Typography>
+              <Box
+                sx={{
+                  display: "flex",
+                  overflowX: "auto",
+                  gap: 2,
+                  padding: 2,
+                }}
+              >
+                {dates.map((date) => (
+                  <Card
+                    key={date}
+                    onClick={() => handleDateSelect(date)}
+                    sx={{
+                      minWidth: isMobile ? 80 : 120,
+                      textAlign: "center",
+                      cursor: "pointer",
+                      backgroundColor:
+                        selectedDate === date ? "#2BB673" : "background.paper",
+                      color:
+                        selectedDate === date
+                          ? "primary.contrastText"
+                          : "text.primary",
+                    }}
+                  >
+                    <CardContent>
+                      <Typography
+                        variant="body2"
+                        sx={{
+                          color: selectedDate === date ? "white" : "#2BB673",
+                        }}
+                      >
+                        {moment(date, "DD-MM-YYYY").format("ddd D")}
+                      </Typography>
+                    </CardContent>
+                  </Card>
+                ))}
+              </Box>
+            </Box>
+
+            {selectedDate && (
+              <Box sx={{ width: "100%", mt: 2 }}>
+                <Typography variant="h6" align="center">
+                  Select Time
+                </Typography>
+                <Box
+                  sx={{
+                    display: "flex",
+                    overflowX: "auto",
+                    marginLeft: "15px",
+                    gap: 2,
+                  }}
+                >
+                  {times.map((time) => (
+                    <Card
+                      key={time.time}
+                      onClick={() => {
+                        if (time.bookingId) {
+                          alert("This time slot is already booked.");
+                        } else {
+                          setSelectedTime(time);
+                        }
+                      }}
+                      style={{
+                        minWidth: 80,
+                        maxWidth: 120,
+                        cursor: "pointer",
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center",
+                        height: "40px",
+                        backgroundColor:
+                          selectedTime === time ? "#2BB673" : "white",
+                        color: selectedTime === time ? "white" : "black",
+                        position: "relative",
+                        borderRadius: "4px",
+                        margin: "5px",
+                        padding: "0",
+                      }}
+                    >
+                      <CardContent style={{ padding: "0", margin: "0" }}>
+                        <Typography
+                          variant="body2"
+                          style={{
+                            color: selectedTime === time ? "white" : "#2BB673",
+                            textAlign: "center",
+                            fontSize: "14px",
+                            width: "100%",
+                          }}
+                        >
+                          {time.time}
+                        </Typography>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </Box>
+              </Box>
+            )}
+
+            <Button
+              variant="contained"
+              onClick={handleBookNow}
+              sx={{
+                mt: 2,
+                width: "250px",
+                backgroundColor: "#2BB673",
+                "&:hover": {
+                  backgroundColor: "#239c5f",
+                },
+              }}
+            >
+              Book Now
+            </Button>
           </>
         )}
-
-        <Box sx={{ width: "100%", mb: 4 }}>
+        {/* <Card
+              sx={{
+                display: "flex",
+                flexDirection: isMobile ? "column" : "row",
+                alignItems: "center",
+                width: "100%",
+                mb: 2,
+                padding: 3,
+                boxShadow: 3,
+                gap: isMobile ? 0 : "50px",
+                position: "relative",
+                height: "auto",
+              }}
+            >
+              {test.image ? (
+                <CardMedia
+                  component="img"
+                  sx={{
+                    width: isMobile ? "100%" : 180,
+                    height: isMobile ? "auto" : 180,
+                    borderRadius: "10px",
+                    objectFit: "contain",
+                    mb: isMobile ? 2 : 0,
+                    mt: isMobile ? 4 : 0,
+                  }}
+                  image={test.image}
+                  alt={test.name}
+                />
+              ) : (
+                <Box
+                  sx={{
+                    width: isMobile ? "100%" : 180,
+                    height: isMobile ? 120 : 180,
+                    borderRadius: "50%",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    backgroundColor: "#e0e0e0",
+                    fontSize: isMobile ? 40 : 60,
+                    mb: isMobile ? 2 : 0,
+                  }}
+                >
+                  {test.name.charAt(0)}
+                </Box>
+              )}
+              <Box
+                sx={{
+                  flex: 1,
+                  marginLeft: isMobile ? 0 : 2,
+                  textAlign: isMobile ? "center" : "left",
+                }}
+              >
+                <Typography
+                  variant="h6"
+                  sx={{ textTransform: "capitalize", color: "text.primary" }}
+                >
+                  Test: {test.name}
+                </Typography>
+                <Typography
+                  variant="h6"
+                  sx={{ textTransform: "capitalize", color: "text.primary" }}
+                >
+                  Hospital: {hospital.name}
+                </Typography>
+              </Box>
+              <IconButton
+                sx={{
+                  position: "absolute",
+                  top: 10,
+                  right: 10,
+                  color: isFavorite ? "red" : "default",
+                }}
+                onClick={toggleFavorite}
+              >
+                <FavoriteIcon />
+              </IconButton>
+            </Card> */}
+        {/* <Box sx={{ width: "100%", mb: 4 }}>
           <Typography
             variant="h6"
             sx={{ marginBottom: 2 }}
@@ -348,23 +531,23 @@ const LabScreen = () => {
           </Typography>
           <Box sx={{ display: "flex", flexWrap: "wrap", gap: 2 }}>
             {dates.map((date) => (
-             <Button
-             key={date}
-             sx={{
-               backgroundColor: selectedDate === date ? "#2BB673" : "white",
-               color: selectedDate === date ? "white" : "#2BB673",
-               "&:hover": {
-                 backgroundColor: selectedDate === date ? "#239c5f" : "#f0f0f0",
-                 color: selectedDate === date ? "white" : "#2BB673",
-               },
-             }}
-             variant={selectedDate === date ? "contained" : "outlined"}
-             color="primary"
-             onClick={() => handleDateSelect(date)}
-           >
-             {date}
-           </Button>
-           
+              <Button
+                key={date}
+                sx={{
+                  backgroundColor: selectedDate === date ? "#2BB673" : "white",
+                  color: selectedDate === date ? "white" : "#2BB673",
+                  "&:hover": {
+                    backgroundColor:
+                      selectedDate === date ? "#239c5f" : "#f0f0f0",
+                    color: selectedDate === date ? "white" : "#2BB673",
+                  },
+                }}
+                variant={selectedDate === date ? "contained" : "outlined"}
+                color="primary"
+                onClick={() => handleDateSelect(date)}
+              >
+                {date}
+              </Button>
             ))}
           </Box>
         </Box>
@@ -380,46 +563,47 @@ const LabScreen = () => {
             </Typography>
             <Box sx={{ display: "flex", flexWrap: "wrap", gap: 2 }}>
               {times.map((slot) => (
-              <Button
-              key={slot.time}
-              sx={{
-                backgroundColor: selectedTime === slot ? "#2BB673" : "white",
-                color: selectedTime === slot ? "white" : "#2BB673",
-                "&:hover": {
-                  backgroundColor: selectedTime === slot ? "#239c5f" : "#f0f0f0",
-                  color: selectedTime === slot ? "white" : "#2BB673",
-                },
-              }}
-              variant={selectedTime === slot ? "contained" : "outlined"}
-              color="primary"
-              onClick={() => setSelectedTime(slot)}
-              disabled={slot.booked}
-              startIcon={slot.booked ? <CancelIcon /> : <AccessTimeIcon />}
-            >
-              {slot.time} {slot.booked ? "(Booked)" : ""}
-            </Button>
-            
+                <Button
+                  key={slot.time}
+                  sx={{
+                    backgroundColor:
+                      selectedTime === slot ? "#2BB673" : "white",
+                    color: selectedTime === slot ? "white" : "#2BB673",
+                    "&:hover": {
+                      backgroundColor:
+                        selectedTime === slot ? "#239c5f" : "#f0f0f0",
+                      color: selectedTime === slot ? "white" : "#2BB673",
+                    },
+                  }}
+                  variant={selectedTime === slot ? "contained" : "outlined"}
+                  color="primary"
+                  onClick={() => setSelectedTime(slot)}
+                  disabled={slot.booked}
+                  startIcon={slot.booked ? <CancelIcon /> : <AccessTimeIcon />}
+                >
+                  {slot.time} {slot.booked ? "(Booked)" : ""}
+                </Button>
               ))}
             </Box>
           </Box>
         )}
 
         {selectedDate && selectedTime && (
-        <Button
-        variant="contained"
-        onClick={handleBookNow}
-        sx={{
-          mt: 2,
-          width: "250px",
-          backgroundColor: "#2BB673",
-          "&:hover": {
-            backgroundColor: "#239c5f",
-          },
-        }}
-      >
-        Book Now
-      </Button>
-        )}
+          <Button
+            variant="contained"
+            onClick={handleBookNow}
+            sx={{
+              mt: 2,
+              width: "250px",
+              backgroundColor: "#2BB673",
+              "&:hover": {
+                backgroundColor: "#239c5f",
+              },
+            }}
+          >
+            Book Now
+          </Button>
+        )} */}
       </Box>
 
       <Footer />

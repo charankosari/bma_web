@@ -393,45 +393,48 @@ const DoctorScreen = () => {
                   sx={{
                     display: "flex",
                     overflowX: "auto",
+                    marginLeft: "15px",
                     gap: 2,
-                    padding: 2,
                   }}
                 >
                   {times.map((time) => (
                     <Card
                       key={time.time}
                       onClick={() => {
-                        if (!time.bookingId) {
+                        if (time.bookingId) {
+                          alert("This time slot is already booked.");
+                        } else {
                           setSelectedTime(time);
                         }
                       }}
-                      sx={{
-                        minWidth: isMobile ? 80 : 120,
-                        textAlign: "center",
+                      style={{
+                        minWidth: 80,
+                        maxWidth: 120,
                         cursor: "pointer",
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center",
+                        height: "40px",
                         backgroundColor:
-                          selectedTime === time
-                            ? "#2BB673"
-                            : "background.paper",
-                        color:
-                          selectedTime === time
-                            ? "primary.contrastText"
-                            : "text.primary",
-                        opacity: time.bookingId ? 0.5 : 1,
+                          selectedTime === time ? "#2BB673" : "white",
+                        color: selectedTime === time ? "white" : "black",
+                        position: "relative",
+                        borderRadius: "4px",
+                        margin: "5px",
+                        padding: "0",
                       }}
                     >
-                      <CardContent>
+                      <CardContent style={{ padding: "0", margin: "0" }}>
                         <Typography
                           variant="body2"
-                          sx={{
-                            color:
-                              selectedTime === time.time ? "white" : "#2BB673",
-                            display: "flex",
-                            alignItems: "center",
-                            gap: 1,
+                          style={{
+                            color: selectedTime === time ? "white" : "#2BB673",
+                            textAlign: "center",
+                            fontSize: "14px",
+                            width: "100%",
                           }}
                         >
-                          {time.bookingId ? `${time.time} (Booked)` : time.time}
+                          {time.time}
                         </Typography>
                       </CardContent>
                     </Card>
