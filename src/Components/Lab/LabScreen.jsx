@@ -39,7 +39,7 @@ const LabScreen = () => {
   const [times, setTimes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [snackbarMessage, setSnackbarMessage] = useState("");
-  const url = "http://localhost:9999";
+  const url = "https://server.bookmyappointments.in";
 
   useEffect(() => {
     const fetchTestDetails = async () => {

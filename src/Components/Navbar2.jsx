@@ -1,21 +1,26 @@
-import React, { useState, useEffect } from 'react';
-import { FaChevronDown, FaSearch } from 'react-icons/fa';
-import { FaLocationDot } from 'react-icons/fa6';
-import { Link } from 'react-router-dom';
-import Avatar from 'react-avatar';
-import logo from '../Assets/logo.png';
-import './Navbar.css';
+import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+import Avatar from "react-avatar";
+import logo from "../Assets/logo.png";
+import "./Navbar.css";
 
-const Navbar = ({ mobile, setMobile, toggleLogin, searchQuery, setSearchQuery,  setSelectedLocation }) => {
+const Navbar = ({
+  mobile,
+  setMobile,
+  toggleLogin,
+  searchQuery,
+  setSearchQuery,
+  setSelectedLocation,
+}) => {
   const [currentLocation, setCurrentLocation] = useState(null);
-  const [areaName, setAreaName] = useState('');
+  const [areaName, setAreaName] = useState("");
   const [isLocationDropdownOpen, setIsLocationDropdownOpen] = useState(false);
   const [isAvatarDropdownOpen, setIsAvatarDropdownOpen] = useState(false);
   const [login, setLogin] = useState(false);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    const token = localStorage.getItem('jwtToken');
+    const token = localStorage.getItem("jwtToken");
     if (token) {
       setLogin(true);
     }
@@ -29,13 +34,12 @@ const Navbar = ({ mobile, setMobile, toggleLogin, searchQuery, setSearchQuery,  
   //   }
   // }, [selectedLocation, currentLocation]);
 
-  useEffect(() => {
-  }, [searchQuery]);
+  useEffect(() => {}, [searchQuery]);
 
   const handleClickOutside = (event) => {
     if (
-      !event.target.closest('.dropdown') &&
-      !event.target.closest('.dropdown-end')
+      !event.target.closest(".dropdown") &&
+      !event.target.closest(".dropdown-end")
     ) {
       setIsLocationDropdownOpen(false);
       setIsAvatarDropdownOpen(false);
@@ -43,9 +47,9 @@ const Navbar = ({ mobile, setMobile, toggleLogin, searchQuery, setSearchQuery,  
   };
 
   useEffect(() => {
-    document.addEventListener('click', handleClickOutside);
+    document.addEventListener("click", handleClickOutside);
     return () => {
-      document.removeEventListener('click', handleClickOutside);
+      document.removeEventListener("click", handleClickOutside);
     };
   }, []);
 
@@ -75,17 +79,17 @@ const Navbar = ({ mobile, setMobile, toggleLogin, searchQuery, setSearchQuery,  
           const { latitude, longitude } = position.coords;
           setCurrentLocation({ latitude, longitude });
           fetchAreaName(latitude, longitude);
-          setSelectedLocation('Current Location');
-          localStorage.setItem('selectedLocation', 'Current Location');
+          setSelectedLocation("Current Location");
+          localStorage.setItem("selectedLocation", "Current Location");
           setIsLocationDropdownOpen(false);
         },
         (error) => {
-          console.error('Error getting location: ', error);
+          console.error("Error getting location: ", error);
           setLoading(false);
         }
       );
     } else {
-      alert('Geolocation is not supported by this browser.');
+      alert("Geolocation is not supported by this browser.");
       setLoading(false);
     }
   };
@@ -100,12 +104,12 @@ const Navbar = ({ mobile, setMobile, toggleLogin, searchQuery, setSearchQuery,  
         const locality = data.locality;
         setAreaName(locality);
         setSelectedLocation(locality);
-        localStorage.setItem('selectedLocation', locality);
+        localStorage.setItem("selectedLocation", locality);
       } else {
-        console.error('Locality not found');
+        console.error("Locality not found");
       }
     } catch (error) {
-      console.error('Error fetching area name: ', error);
+      console.error("Error fetching area name: ", error);
     } finally {
       setLoading(false);
     }
@@ -114,14 +118,14 @@ const Navbar = ({ mobile, setMobile, toggleLogin, searchQuery, setSearchQuery,  
   const handleCitySelect = (city) => {
     setAreaName(city);
     setSelectedLocation(city);
-    localStorage.setItem('selectedLocation', city);
+    localStorage.setItem("selectedLocation", city);
     setIsLocationDropdownOpen(false);
   };
 
   const handleNoneSelect = () => {
-    setAreaName('');
-    setSelectedLocation('Select location');
-    localStorage.removeItem('selectedLocation');
+    setAreaName("");
+    setSelectedLocation("Select location");
+    localStorage.removeItem("selectedLocation");
     setIsLocationDropdownOpen(false);
   };
 
@@ -130,34 +134,57 @@ const Navbar = ({ mobile, setMobile, toggleLogin, searchQuery, setSearchQuery,  
   };
 
   const handleSearchSubmit = () => {
-    console.log('Search query: ', searchQuery);
+    console.log("Search query: ", searchQuery);
   };
 
   return (
     <div className="navbar">
       <div className="navbar-content">
         <Link to="/">
-          <img src={logo} alt="Logo" className="logo" style={{ height: '60px', width: 'auto' }} />
+          <img
+            src={logo}
+            alt="Logo"
+            className="logo"
+            style={{ height: "60px", width: "auto" }}
+          />
         </Link>
-      
-   <h2 style={{color:'white'}} className='bookmyappointments'>BookMyAppointments</h2>
+
+        <h2
+          style={{ color: "white", fontWeight: "normal" }}
+          className="bookmyappointments"
+        >
+          BookMyAppointments
+        </h2>
       </div>
       {login ? (
-        <div className="dropdown-end">
+        <div className="dropdown-end" style={{ marginRight: "10px" }}>
           <div role="button" className="avatar" onClick={toggleAvatarDropdown}>
             <Avatar name="User" round={true} size="40" />
           </div>
           {isAvatarDropdownOpen && (
             <div className="menu-dropdown">
-              <Link to="/profile" style={{ textAlign: 'center' }}>Profile</Link>
-              <Link to="/bookings" style={{ textAlign: 'center' }}>Bookings</Link>
-              <Link to="/fav" style={{ textAlign: 'center' }}>Favorites</Link>
-              <Link to="/records" style={{ textAlign: 'center' }}>Medical Records</Link>
-              <Link to='/help-support'>help and support</Link>
+              <Link to="/profile" style={{ textAlign: "center" }}>
+                Profile
+              </Link>
+              <Link to="/bookings" style={{ textAlign: "center" }}>
+                Bookings
+              </Link>
+              <Link to="/fav" style={{ textAlign: "center" }}>
+                Favorites
+              </Link>
+              <Link to="/records" style={{ textAlign: "center" }}>
+                Medical Records
+              </Link>
+              <Link to="/help-support">help and support</Link>
               <p
-                style={{ color: 'red', marginLeft: '10px', marginTop: '8px', marginBottom: '0px' }}
+                style={{
+                  color: "red",
+                  marginLeft: "10px",
+                  marginTop: "8px",
+                  marginBottom: "0px",
+                }}
                 onClick={() => {
-                  localStorage.removeItem('jwtToken');
+                  localStorage.removeItem("jwtToken");
                   setLogin(false);
                   toggleLogin();
                 }}
@@ -168,7 +195,11 @@ const Navbar = ({ mobile, setMobile, toggleLogin, searchQuery, setSearchQuery,  
           )}
         </div>
       ) : (
-        <button className="login-button" onClick={handleVerify}>
+        <button
+          className="login-button"
+          onClick={handleVerify}
+          style={{ marginRight: "10px" }}
+        >
           Login
         </button>
       )}

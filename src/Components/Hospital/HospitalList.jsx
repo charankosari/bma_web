@@ -102,10 +102,12 @@ const HospitalList = ({
     const fetchHospitals = async () => {
       try {
         setLoading(true);
-        // const response = await fetch('https://server.bookmyappointments.in/api/bma/hospital/admin/getallhospitals');
         const response = await fetch(
-          "http://localhost:9999/api/bma/hospital/admin/getallhospitalsrem"
+          "https://server.bookmyappointments.in/api/bma/hospital/admin/getallhospitalsrem"
         );
+        // const response = await fetch(
+        //   "http://localhost:9999/api/bma/hospital/admin/getallhospitalsrem"
+        // );
         const data = await response.json();
         if (data.success) {
           const formattedData = data.hospitals

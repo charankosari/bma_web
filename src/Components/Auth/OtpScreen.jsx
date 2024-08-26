@@ -1,13 +1,13 @@
-import React, { useRef, useState } from 'react';
-import './OtpScreen.css';
-import { useNavigate, useLocation } from 'react-router-dom';
+import React, { useRef, useState } from "react";
+import "./OtpScreen.css";
+import { useNavigate, useLocation } from "react-router-dom";
 
-function OtpScreen({ toggleLogin, toggleOtp, mobileNumber,Log }) {
+function OtpScreen({ toggleLogin, toggleOtp, mobileNumber, Log }) {
   const inputRefs = useRef([]);
   const navigate = useNavigate();
   const location = useLocation();
-  const {number} = Number(mobileNumber); 
-  const [otpno, setOtpno] = useState(Array(4).fill(''));
+  const { number } = Number(mobileNumber);
+  const [otpno, setOtpno] = useState(Array(4).fill(""));
   const [loading, setLoading] = useState(false);
 
   const handleChange = (e, index) => {
@@ -15,7 +15,7 @@ function OtpScreen({ toggleLogin, toggleOtp, mobileNumber,Log }) {
     if (value.length === 1 && index < 3) {
       inputRefs.current[index + 1].focus();
     }
-    setOtpno(prevOtp => {
+    setOtpno((prevOtp) => {
       const newOtp = [...prevOtp];
       newOtp[index] = value;
       return newOtp;
@@ -24,32 +24,35 @@ function OtpScreen({ toggleLogin, toggleOtp, mobileNumber,Log }) {
 
   const handleSubmit = async () => {
     setLoading(true);
-    const otpNumber = Number(otpno.join(''));
-const userid=sessionStorage.getItem('userid')
+    const otpNumber = Number(otpno.join(""));
+    const userid = sessionStorage.getItem("userid");
     try {
-      // const response = await fetch("https://server.bookmyappointments.in/api/bma/verifyotp", {
-      const response = await fetch("http://localhost:9999/api/bma/verifyotp", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ userid, otp: otpNumber }),
-      });
+      const response = await fetch(
+        "https://server.bookmyappointments.in/api/bma/verifyotp",
+        {
+          // const response = await fetch("http://localhost:9999/api/bma/verifyotp", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ userid, otp: otpNumber }),
+        }
+      );
 
       const data = await response.json();
 
       if (data.success) {
-        localStorage.setItem('jwtToken', data.jwtToken);
+        localStorage.setItem("jwtToken", data.jwtToken);
         toggleLogin();
         toggleOtp();
-        // Log(true); 
+        // Log(true);
         window.location.reload();
-        navigate('/');  
+        navigate("/");
       } else {
-        alert(data.message || 'Invalid response from server');
+        alert(data.message || "Invalid response from server");
       }
     } catch (error) {
-      alert('Error: ' + error.message);
+      alert("Error: " + error.message);
     } finally {
       setLoading(false);
     }
@@ -65,7 +68,7 @@ const userid=sessionStorage.getItem('userid')
               key={index}
               type="text"
               maxLength="1"
-              ref={el => inputRefs.current[index] = el}
+              ref={(el) => (inputRefs.current[index] = el)}
               onChange={(e) => handleChange(e, index)}
               onFocus={(e) => e.target.select()}
               value={digit}
@@ -73,8 +76,12 @@ const userid=sessionStorage.getItem('userid')
             />
           ))}
         </div>
-        <button className="verify-button" onClick={handleSubmit} disabled={loading}>
-          {loading ? 'Verifying...' : 'VERIFY'}
+        <button
+          className="verify-button"
+          onClick={handleSubmit}
+          disabled={loading}
+        >
+          {loading ? "Verifying..." : "VERIFY"}
         </button>
       </div>
     </div>

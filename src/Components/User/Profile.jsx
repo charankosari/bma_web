@@ -1,34 +1,47 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import {
-  Container, TextField, Button, Typography, Box, Modal, CircularProgress, Card, CardContent, CardActions, Grid
-} from '@mui/material';
-import axios from 'axios';
-import Footer from '../Footer';
+  Container,
+  TextField,
+  Button,
+  Typography,
+  Box,
+  Modal,
+  CircularProgress,
+  Card,
+  CardContent,
+  CardActions,
+  Grid,
+} from "@mui/material";
+import axios from "axios";
+import Footer from "../Footer";
 
 const Profile = ({ login, toggleLogin, mobile, setMobile }) => {
   const [userDetails, setUserDetails] = useState({});
   const [loading, setLoading] = useState(false);
   const [otpSent, setOtpSent] = useState(false);
-  const [otp, setOtp] = useState('');
-  const [newNumber, setNewNumber] = useState('');
+  const [otp, setOtp] = useState("");
+  const [newNumber, setNewNumber] = useState("");
   const [numberModalVisible, setNumberModalVisible] = useState(false);
   const [initialDetails, setInitialDetails] = useState({});
 
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const jwtToken = localStorage.getItem('jwtToken');
+        const jwtToken = localStorage.getItem("jwtToken");
         if (!jwtToken) {
-          throw new Error('JWT token not found in localStorage');
+          throw new Error("JWT token not found in localStorage");
         }
-        // const response = await axios.get('https://server.bookmyappointments.in/api/bma/me', {
-        const response = await axios.get('http://localhost:9999/api/bma/me', {
-          headers: { Authorization: `Bearer ${jwtToken}` }
-        });
+        const response = await axios.get(
+          "https://server.bookmyappointments.in/api/bma/me",
+          {
+            // const response = await axios.get('http://localhost:9999/api/bma/me', {
+            headers: { Authorization: `Bearer ${jwtToken}` },
+          }
+        );
         setUserDetails(response.data.user);
         setInitialDetails(response.data.user);
       } catch (error) {
-        console.error('Error fetching user data:', error);
+        console.error("Error fetching user data:", error);
       }
     };
     fetchUserData();
@@ -57,9 +70,9 @@ const Profile = ({ login, toggleLogin, mobile, setMobile }) => {
 
     setLoading(true);
     try {
-      const jwtToken = localStorage.getItem('jwtToken');
+      const jwtToken = localStorage.getItem("jwtToken");
       const response = await axios.put(
-        'https://server.bookmyappointments.in/api/bma/me/profileupdate',
+        "https://server.bookmyappointments.in/api/bma/me/profileupdate",
         updatedFields,
         {
           headers: { Authorization: `Bearer ${jwtToken}` },
@@ -83,11 +96,16 @@ const Profile = ({ login, toggleLogin, mobile, setMobile }) => {
 
     setLoading(true);
     try {
-      const jwtToken = localStorage.getItem('jwtToken');
+      const jwtToken = localStorage.getItem("jwtToken");
       const response = await axios.post(
         "https://server.bookmyappointments.in/api/bma/verifynumber",
         { number: newNumber },
-        { headers: { Authorization: `Bearer ${jwtToken}`, "Content-Type": "application/json" } }
+        {
+          headers: {
+            Authorization: `Bearer ${jwtToken}`,
+            "Content-Type": "application/json",
+          },
+        }
       );
       if (response.data.message === "OTP sent successfully") {
         setOtpSent(true);
@@ -111,17 +129,25 @@ const Profile = ({ login, toggleLogin, mobile, setMobile }) => {
 
     setLoading(true);
     try {
-      const jwtToken = localStorage.getItem('jwtToken');
+      const jwtToken = localStorage.getItem("jwtToken");
       const response = await axios.put(
         "https://server.bookmyappointments.in/api/bma/numberupdate",
         { otp: parseInt(otp), number: newNumber, userid: userDetails._id },
-        { headers: { Authorization: `Bearer ${jwtToken}`, "Content-Type": "application/json" } }
+        {
+          headers: {
+            Authorization: `Bearer ${jwtToken}`,
+            "Content-Type": "application/json",
+          },
+        }
       );
       if (response.data.success) {
         setInitialDetails({ ...initialDetails, number: newNumber });
-        setUserDetails((prevDetails) => ({ ...prevDetails, number: newNumber }));
-        setNewNumber('');
-        setOtp('');
+        setUserDetails((prevDetails) => ({
+          ...prevDetails,
+          number: newNumber,
+        }));
+        setNewNumber("");
+        setOtp("");
         setOtpSent(false); // Reset OTP sent status
         setNumberModalVisible(false);
         alert("Mobile number updated successfully!");
@@ -139,7 +165,9 @@ const Profile = ({ login, toggleLogin, mobile, setMobile }) => {
   return (
     <div>
       <Container maxWidth="md" sx={{ mt: 4, mb: 4 }}>
-        <Typography variant="h4" gutterBottom>Account Information</Typography>
+        <Typography variant="h4" gutterBottom>
+          Account Information
+        </Typography>
         <Card sx={{ mb: 4 }}>
           <CardContent>
             <Grid container spacing={2}>
@@ -148,7 +176,7 @@ const Profile = ({ login, toggleLogin, mobile, setMobile }) => {
                   label="Email"
                   id="email"
                   InputLabelProps={{ shrink: true }}
-                  value={userDetails.email || ''}
+                  value={userDetails.email || ""}
                   onChange={handleChange}
                   fullWidth
                   margin="normal"
@@ -158,7 +186,7 @@ const Profile = ({ login, toggleLogin, mobile, setMobile }) => {
                 <TextField
                   label="Mobile"
                   id="mobile"
-                  value={otpSent ? newNumber : userDetails.number || ''}
+                  value={otpSent ? newNumber : userDetails.number || ""}
                   InputLabelProps={{ shrink: true }}
                   onClick={() => setNumberModalVisible(true)}
                   fullWidth
@@ -169,7 +197,9 @@ const Profile = ({ login, toggleLogin, mobile, setMobile }) => {
             </Grid>
           </CardContent>
         </Card>
-        <Typography variant="h4" gutterBottom>Personal Information</Typography>
+        <Typography variant="h4" gutterBottom>
+          Personal Information
+        </Typography>
         <Card>
           <CardContent>
             <Grid container spacing={2}>
@@ -177,7 +207,7 @@ const Profile = ({ login, toggleLogin, mobile, setMobile }) => {
                 <TextField
                   label="Name"
                   id="name"
-                  value={userDetails.name || ''}
+                  value={userDetails.name || ""}
                   onChange={handleChange}
                   InputLabelProps={{ shrink: true }}
                   fullWidth
@@ -190,7 +220,7 @@ const Profile = ({ login, toggleLogin, mobile, setMobile }) => {
                   id="age"
                   InputLabelProps={{ shrink: true }}
                   placeholder="Enter your age"
-                  value={userDetails.age || ''}
+                  value={userDetails.age || ""}
                   onChange={handleChange}
                   fullWidth
                   margin="normal"
@@ -202,7 +232,7 @@ const Profile = ({ login, toggleLogin, mobile, setMobile }) => {
                   id="weight"
                   InputLabelProps={{ shrink: true }}
                   placeholder="Enter your weight"
-                  value={userDetails.weight || ''}
+                  value={userDetails.weight || ""}
                   onChange={handleChange}
                   fullWidth
                   margin="normal"
@@ -214,7 +244,7 @@ const Profile = ({ login, toggleLogin, mobile, setMobile }) => {
                   id="height"
                   InputLabelProps={{ shrink: true }}
                   placeholder="Enter your height"
-                  value={userDetails.height || ''}
+                  value={userDetails.height || ""}
                   onChange={handleChange}
                   fullWidth
                   margin="normal"
@@ -222,13 +252,13 @@ const Profile = ({ login, toggleLogin, mobile, setMobile }) => {
               </Grid>
             </Grid>
           </CardContent>
-          <CardActions sx={{ justifyContent: 'flex-end', p: 2 }}>
+          <CardActions sx={{ justifyContent: "flex-end", p: 2 }}>
             <Button
               variant="contained"
               sx={{
-                backgroundColor: '#2BB673',
-                '&:hover': {
-                  backgroundColor: '#249960', 
+                backgroundColor: "#2BB673",
+                "&:hover": {
+                  backgroundColor: "#249960",
                 },
               }}
               onClick={handleSave}
@@ -236,14 +266,29 @@ const Profile = ({ login, toggleLogin, mobile, setMobile }) => {
             >
               {loading ? <CircularProgress size={24} /> : "Save"}
             </Button>
-
           </CardActions>
         </Card>
       </Container>
       <Footer />
-      <Modal open={numberModalVisible} onClose={() => setNumberModalVisible(false)}>
-        <Box sx={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: 400, bgcolor: 'background.paper', boxShadow: 24, p: 4 }}>
-          <Typography variant="h6" gutterBottom>Change Mobile Number</Typography>
+      <Modal
+        open={numberModalVisible}
+        onClose={() => setNumberModalVisible(false)}
+      >
+        <Box
+          sx={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            width: 400,
+            bgcolor: "background.paper",
+            boxShadow: 24,
+            p: 4,
+          }}
+        >
+          <Typography variant="h6" gutterBottom>
+            Change Mobile Number
+          </Typography>
           <TextField
             label="New Mobile Number"
             value={newNumber}
@@ -261,9 +306,18 @@ const Profile = ({ login, toggleLogin, mobile, setMobile }) => {
               margin="normal"
             />
           )}
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 2 }}>
-            <Button onClick={otpSent ? handleVerifyOtp : handleSendOtp} disabled={loading}>
-              {loading ? <CircularProgress size={24} /> : otpSent ? "Verify OTP" : "Send OTP"}
+          <Box sx={{ display: "flex", justifyContent: "space-between", mt: 2 }}>
+            <Button
+              onClick={otpSent ? handleVerifyOtp : handleSendOtp}
+              disabled={loading}
+            >
+              {loading ? (
+                <CircularProgress size={24} />
+              ) : otpSent ? (
+                "Verify OTP"
+              ) : (
+                "Send OTP"
+              )}
             </Button>
             <Button onClick={() => setNumberModalVisible(false)}>Cancel</Button>
           </Box>

@@ -44,7 +44,8 @@ const HospitalDetailsPage = ({
             hospital.tests?.map(async (test) => {
               try {
                 const response = await fetch(
-                  `http://localhost:9999/api/bma/tests/${test.testid}`
+                  `https://server.bookmyappointments.in/api/bma/tests/${test.testid}`
+                  // `http://localhost:9999/api/bma/tests/${test.testid}`
                 );
                 if (!response.ok) {
                   throw new Error(`Failed to fetch test ${test.testid}`);
@@ -91,11 +92,14 @@ const HospitalDetailsPage = ({
   useEffect(() => {
     const fetchFavorites = async () => {
       try {
-        const response = await fetch("http://localhost:9999/api/bma/me", {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("jwtToken")}`,
-          },
-        });
+        const response = await fetch(
+          "https://server.bookmyappointments.in/api/bma/me",
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("jwtToken")}`,
+            },
+          }
+        );
         const data = await response.json();
         setFavorites(data.wishList || []);
       } catch (error) {

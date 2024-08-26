@@ -42,7 +42,6 @@ const FileUpload = () => {
   const imageInputRef = useRef(null);
   const [deletingFile, setDeletingFile] = useState(null);
 
-
   const handleUpload = async (type) => {
     if (type === "image") {
       imageInputRef.current.click();
@@ -75,8 +74,8 @@ const FileUpload = () => {
 
     try {
       const response = await fetch(
-        // "https://server.bookmyappointments.in/api/bma/upload",
-        "http://localhost:9999/api/bma/upload",
+        "https://server.bookmyappointments.in/api/bma/upload",
+        // "http://localhost:9999/api/bma/upload",
         {
           method: "POST",
           body: formData,
@@ -117,7 +116,8 @@ const FileUpload = () => {
     const jwtToken = localStorage.getItem("jwtToken");
     try {
       const response = await fetch(
-        `http://localhost:9999/api/bma/delete/${filename}`,
+        // `http://localhost:9999/api/bma/delete/${filename}`,
+        "https://server.bookmyappointments.in/api/bma/upload",
         {
           method: "DELETE",
           headers: {
@@ -138,12 +138,11 @@ const FileUpload = () => {
     }
   };
 
-
   const fetchFiles = async (jwtToken) => {
     try {
       const response = await fetch(
-        // "https://server.bookmyappointments.in/api/bma/me",
-        "http://localhost:9999/api/bma/me",
+        "https://server.bookmyappointments.in/api/bma/me",
+        // "http://localhost:9999/api/bma/me",
         {
           headers: {
             Authorization: `Bearer ${jwtToken}`,
@@ -180,12 +179,12 @@ const FileUpload = () => {
       {loading ? (
         <Box
           sx={{
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            minHeight: '60vh',
-            width: '100%',
-            textAlign: 'center'
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            minHeight: "60vh",
+            width: "100%",
+            textAlign: "center",
           }}
         >
           <CircularProgress />
@@ -193,71 +192,69 @@ const FileUpload = () => {
       ) : files.length === 0 ? (
         <Box
           sx={{
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            minHeight: '60vh',
-            width: '100%',
-            textAlign: 'center'
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            minHeight: "60vh",
+            width: "100%",
+            textAlign: "center",
           }}
         >
           <Typography>No files or images in medical reports</Typography>
         </Box>
       ) : (
         <Grid container spacing={2}>
-        {files.map((file, index) => (
-          <Grid item xs={12} sm={6} md={4} key={index}>
-            <Card
-              onClick={() => handleViewFile(file)}
-              sx={{
-                display: "flex",
-                alignItems: "center",
-                padding: "8px",
-              }}
-            >
-              <FileIcon sx={{ fontSize: 40, marginRight: "16px" }} />
-              <CardContent
+          {files.map((file, index) => (
+            <Grid item xs={12} sm={6} md={4} key={index}>
+              <Card
+                onClick={() => handleViewFile(file)}
                 sx={{
-                  flex: 1,
-                  padding: 0,
-                  overflow: "hidden", // Prevent content overflow
-                  maxWidth: { xs: "65%", sm: "80%" }, // Adjust width for mobile
+                  display: "flex",
+                  alignItems: "center",
+                  padding: "8px",
                 }}
               >
-                <Typography
-                  variant="body2"
-                  color="textSecondary"
-                  component="p"
-                  noWrap
+                <FileIcon sx={{ fontSize: 40, marginRight: "16px" }} />
+                <CardContent
                   sx={{
-                    textOverflow: "ellipsis", // Ensure text truncation
-                    overflow: "hidden",
+                    flex: 1,
+                    padding: 0,
+                    overflow: "hidden", // Prevent content overflow
+                    maxWidth: { xs: "65%", sm: "80%" }, // Adjust width for mobile
                   }}
                 >
-                  {file.name}
-                </Typography>
-              </CardContent>
-              <IconButton
-                aria-label="delete"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleDelete(file.name);
-                }}
-                sx={{ padding: "8px" }}
-              >
-                {deletingFile === file.name ? (
-                  <CircularProgress size={24} />
-                ) : (
-                  <DeleteIcon />
-                )}
-              </IconButton>
-            </Card>
-          </Grid>
-        ))}
-      </Grid>
-      
+                  <Typography
+                    variant="body2"
+                    color="textSecondary"
+                    component="p"
+                    noWrap
+                    sx={{
+                      textOverflow: "ellipsis", // Ensure text truncation
+                      overflow: "hidden",
+                    }}
+                  >
+                    {file.name}
+                  </Typography>
+                </CardContent>
+                <IconButton
+                  aria-label="delete"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleDelete(file.name);
+                  }}
+                  sx={{ padding: "8px" }}
+                >
+                  {deletingFile === file.name ? (
+                    <CircularProgress size={24} />
+                  ) : (
+                    <DeleteIcon />
+                  )}
+                </IconButton>
+              </Card>
+            </Grid>
+          ))}
+        </Grid>
       )}
-
 
       {showUploadOptions && (
         <Box
@@ -363,8 +360,8 @@ const FileUpload = () => {
                   workerUrl={`https://unpkg.com/pdfjs-dist@3.4.120/build/pdf.worker.min.js`}
                 >
                   <Viewer
-                    // fileUrl={`https://server.bookmyappointments.in/api/bma/downloadb?url=${viewingFile.location}`}
-                    fileUrl={`http://localhost:9999/api/bma/downloadb?url=${viewingFile.location}`}
+                    fileUrl={`https://server.bookmyappointments.in/api/bma/downloadb?url=${viewingFile.location}`}
+                    // fileUrl={`http://localhost:9999/api/bma/downloadb?url=${viewingFile.location}`}
                     style={{ width: "100%", height: "100%" }}
                   />
                 </Worker>

@@ -1,20 +1,21 @@
-import React, { useRef, useState } from 'react';
-import './OtpScreen.css';
-import { useNavigate, useLocation } from 'react-router-dom';
+import React, { useRef, useState } from "react";
+import "./OtpScreen.css";
+import { useNavigate, useLocation } from "react-router-dom";
 
 function OtpRegister({ toggleLogin, toggleReg, mobileNumber }) {
   const inputRefs = useRef([]);
   const navigate = useNavigate();
   const location = useLocation();
-  const [otp, setOtp] = useState(Array(4).fill(''));
+  const [otp, setOtp] = useState(Array(4).fill(""));
   const [loading, setLoading] = useState(false);
   const number = Number(mobileNumber); // Ensure mobileNumber is parsed as integer
-  console.log(number)
+  console.log(number);
 
   const handleChange = (e, index) => {
     const value = e.target.value;
-    if (/^\d$/.test(value)) { // Ensure input is a digit
-      setOtp(prevOtp => {
+    if (/^\d$/.test(value)) {
+      // Ensure input is a digit
+      setOtp((prevOtp) => {
         const newOtp = [...prevOtp];
         newOtp[index] = value;
         return newOtp;
@@ -25,40 +26,42 @@ function OtpRegister({ toggleLogin, toggleReg, mobileNumber }) {
     }
   };
 
-  const handleSubm=()=>{
-    navigate('/');
-        toggleLogin();
-        toggleReg();
-  }
+  const handleSubm = () => {
+    navigate("/");
+    toggleLogin();
+    toggleReg();
+  };
   const handleSubmit = async () => {
     setLoading(true);
-    const otpNumber = Number(otp.join(''));
-    console.log(otpNumber)
+    const otpNumber = Number(otp.join(""));
+    console.log(otpNumber);
 
-   const payload = {  number, otp: otpNumber };
+    const payload = { number, otp: otpNumber };
     try {
-      // const response = await fetch("https://server.bookmyappointments.in/api/bma/verifyregisterotp", {
-      const response = await fetch("http://localhost:9999/api/bma/verifyregisterotp", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(payload),
-      });
+      const response = await fetch(
+        "https://server.bookmyappointments.in/api/bma/verifyregisterotp",
+        {
+          // const response = await fetch("http://localhost:9999/api/bma/verifyregisterotp", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(payload),
+        }
+      );
       const data = await response.json();
-      console.log(data)
+      console.log(data);
       if (data.success) {
-        localStorage.setItem('jwtToken', data.jwtToken);
+        localStorage.setItem("jwtToken", data.jwtToken);
         toggleLogin();
         toggleReg();
         window.location.reload();
-        navigate('/');
-
+        navigate("/");
       } else {
-        alert(data.message || 'Invalid response from server');
+        alert(data.message || "Invalid response from server");
       }
     } catch (error) {
-      alert('Error: ' + error.message);
+      alert("Error: " + error.message);
     } finally {
       setLoading(false);
     }
@@ -74,7 +77,7 @@ function OtpRegister({ toggleLogin, toggleReg, mobileNumber }) {
               key={index}
               type="text"
               maxLength="1"
-              ref={el => inputRefs.current[index] = el}
+              ref={(el) => (inputRefs.current[index] = el)}
               onChange={(e) => handleChange(e, index)}
               onFocus={(e) => e.target.select()}
               value={digit}
@@ -82,8 +85,12 @@ function OtpRegister({ toggleLogin, toggleReg, mobileNumber }) {
             />
           ))}
         </div>
-        <button className="verify-button" onClick={handleSubmit} disabled={loading}>
-          {loading ? 'Verifying...' : 'VERIFY'}
+        <button
+          className="verify-button"
+          onClick={handleSubmit}
+          disabled={loading}
+        >
+          {loading ? "Verifying..." : "VERIFY"}
         </button>
       </div>
     </div>

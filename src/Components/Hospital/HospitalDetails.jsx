@@ -41,10 +41,12 @@ const HospitalDetailsPage = ({
   useEffect(() => {
     const fetchHospitalDetails = async () => {
       try {
-        // const response = await fetch(`https://server.bookmyappointments.in/api/bma/user/doctors/${hospitalId}`);
         const response = await fetch(
-          `http://localhost:9999/api/bma/user/doctors/${hospitalId}`
+          `https://server.bookmyappointments.in/api/bma/user/doctors/${hospitalId}`
         );
+        // const response = await fetch(
+        // `http://localhost:9999/api/bma/user/doctors/${hospitalId}`
+        // );
         const data = await response.json();
         setHospital(data.hospital);
         setDoctors(data.hospital.doctors);
@@ -79,12 +81,15 @@ const HospitalDetailsPage = ({
   useEffect(() => {
     const fetchFavorites = async () => {
       try {
-        // const response = await fetch("https://server.bookmyappointments.in/api/bma/me", {
-        const response = await fetch("http://localhost:9999/api/bma/me", {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("jwtToken")}`,
-          },
-        });
+        const response = await fetch(
+          "https://server.bookmyappointments.in/api/bma/me",
+          {
+            // const response = await fetch("http://localhost:9999/api/bma/me", {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("jwtToken")}`,
+            },
+          }
+        );
         const data = await response.json();
         setFavorites(data.wishList || []);
       } catch (error) {

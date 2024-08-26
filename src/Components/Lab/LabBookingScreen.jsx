@@ -26,7 +26,8 @@ L.Icon.Default.mergeOptions({
   shadowUrl:
     "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png",
 });
-const url = "http://localhost:9999";
+// const url = "http://localhost:9999";
+const url = "https://server.bookmyappointments.in";
 
 const SuccessScreen = () => {
   const navigate = useNavigate();

@@ -80,7 +80,7 @@ body {
   font-size: 1.5rem;
 }
 
-.dropdown .btn .location-title{
+.dropdown .btn .location-title {
   font-size: 16px;
   margin-top: 4px;
 }
@@ -126,7 +126,6 @@ body {
 .location-dropdown p:hover {
   background-color: #555555;
 }
-
 
 .dropdown-end {
   display: flex;
@@ -187,7 +186,7 @@ body {
 }
 
 .login-button {
-  background-color: #2BB673;
+  background-color: #2bb673;
   color: white;
   border: none;
   border-radius: 25px;
@@ -202,7 +201,7 @@ body {
 
 /* Media queries for responsiveness */
 @media (max-width: 1024px) {
-  .logo{
+  .logo {
     height: 50px;
     width: 50px;
   }
@@ -230,15 +229,15 @@ body {
     text-align: center;
   }
 
-  .location-dropdown {  
+  .location-dropdown {
     width: 200px;
     left: -50%;
   }
   .dropdown .btn .location-icon {
     font-size: 1.25rem;
   }
-  
-  .dropdown .btn .location-title{
+
+  .dropdown .btn .location-title {
     font-size: 16px;
     margin-top: 4px;
   }
@@ -247,7 +246,7 @@ body {
     font-size: 1.125rem;
   }
   .login-button {
-    background-color: #2BB673;
+    background-color: #2bb673;
     color: white;
     border: none;
     border-radius: 25px;
@@ -264,8 +263,8 @@ body {
     width: 50px;
     height: 50px;
   }
-  .bookmyappointments{
-    font-size: 20px;
+  .bookmyappointments {
+    font-size: 18px;
   }
   .search-container {
     flex: 0.95;
@@ -281,7 +280,7 @@ body {
   .dropdown .btn .location-icon {
     font-size: 1.25rem;
   }
-  .dropdown .btn .location-title{
+  .dropdown .btn .location-title {
     font-size: 14px;
     margin-top: 4px;
   }
@@ -327,7 +326,7 @@ body {
   }
 
   .login-button {
-    background-color: #2BB673;
+    background-color: #2bb673;
     color: white;
     border: none;
     border-radius: 25px;
@@ -335,6 +334,6 @@ body {
     cursor: pointer;
     height: 2.5rem;
     width: 5rem;
-   font-size: medium;
+    font-size: medium;
   }
 }

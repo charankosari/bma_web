@@ -42,10 +42,12 @@ const DoctorScreen = () => {
     const fetchDoctorDetails = async () => {
       try {
         const jwtToken = localStorage.getItem("jwtToken"); // Retrieve JWT token from localStorage
-        // const response = await fetch(`https://server.bookmyappointments.in/api/bma/getsingledoc/${id}`, {
         const response = await fetch(
-          `http://localhost:9999/api/bma/getsingledoc/${id}`,
+          `https://server.bookmyappointments.in/api/bma/getsingledoc/${id}`,
           {
+            // const response = await fetch(
+            // `http://localhost:9999/api/bma/getsingledoc/${id}`,
+            // {
             headers: {
               Authorization: `Bearer ${jwtToken}`, // Use JWT token in request headers
             },
@@ -94,8 +96,8 @@ const DoctorScreen = () => {
     const fetchUserDetails = async () => {
       try {
         const response = await fetch(
-          // "https://server.bookmyappointments.in/api/bma/me",
-          "http://localhost:9999/api/bma/me",
+          "https://server.bookmyappointments.in/api/bma/me",
+          // "http://localhost:9999/api/bma/me",
           {
             headers: {
               Authorization: `Bearer ${localStorage.getItem("jwtToken")}`,
@@ -111,8 +113,8 @@ const DoctorScreen = () => {
     const fetchFavoriteStatus = async () => {
       try {
         const response = await fetch(
-          // "https://server.bookmyappointments.in/api/bma/me",
-          "http://localhost:9999/api/bma/me",
+          "https://server.bookmyappointments.in/api/bma/me",
+          // "http://localhost:9999/api/bma/me",
           {
             headers: {
               Authorization: `Bearer ${localStorage.getItem("jwtToken")}`,
@@ -171,8 +173,8 @@ const DoctorScreen = () => {
   const toggleFavorite = async () => {
     try {
       const response = await fetch(
-        // `https://server.bookmyappointments.in/api/bma/me/wishlist/${doctor.id}`,
-        `http://localhost:9999/api/bma/me/wishlist/${doctor.id}`,
+        `https://server.bookmyappointments.in/api/bma/me/wishlist/${doctor.id}`,
+        // `http://localhost:9999/api/bma/me/wishlist/${doctor.id}`,
         {
           method: "POST",
           headers: {
