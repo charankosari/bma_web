@@ -22,7 +22,9 @@ body {
   align-items: center;
   width: 100%;
 }
-
+.bookmyappointments {
+  font-size: 20px;
+}
 .logo {
   width: 70px;
   height: 70px;
@@ -190,9 +192,11 @@ body {
   color: white;
   border: none;
   border-radius: 25px;
-  padding: 0.5rem 1rem;
+  padding: 0.7rem 1.2rem;
   cursor: pointer;
   height: 2.5rem;
+  font-size: 15px;
+  font-weight: 700;
 }
 
 .login-button:hover {

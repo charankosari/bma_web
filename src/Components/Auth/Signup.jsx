@@ -48,7 +48,6 @@ function Signup({
       const response = await fetch(
         "https://server.bookmyappointments.in/api/bma/register",
         {
-          // const response = await fetch("http://localhost:9999/api/bma/register", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -57,8 +56,14 @@ function Signup({
         }
       );
       const data = await response.json();
+      const userDetails = {
+        name: name,
+        email: email,
+        number: mobileNumber,
+      };
+      sessionStorage.setItem("userDetails", JSON.stringify(userDetails));
       console.log(data);
-
+      console.log(response.ok);
       if (response.ok) {
         toggleSignup();
         toggleReg();

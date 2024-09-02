@@ -28,12 +28,12 @@ function MobileVerify({
       alert("Please enter a valid 10-digit mobile number.");
       return;
     }
+
     setLoading(true);
     try {
       const response = await fetch(
         "https://server.bookmyappointments.in/api/bma/login",
         {
-          // const response = await fetch("http://localhost:9999/api/bma/login", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -43,7 +43,7 @@ function MobileVerify({
       );
 
       const data = await response.json();
-      console.log(data);
+      sessionStorage.setItem("number", mobileNumber);
       sessionStorage.setItem("userid", data.userid);
       if (response.ok) {
         toggleMobile();

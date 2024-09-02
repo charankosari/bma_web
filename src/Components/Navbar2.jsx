@@ -145,13 +145,16 @@ const Navbar = ({
             src={logo}
             alt="Logo"
             className="logo"
-            style={{ height: "60px", width: "auto" }}
+            style={{ height: "50px", width: "auto" }}
           />
         </Link>
 
         <h2
-          style={{ color: "white", fontWeight: "normal" }}
+          style={{ color: "white", fontWeight: "normal", cursor: "pointer" }}
           className="bookmyappointments"
+          onClick={() => {
+            window.location.href = "/";
+          }}
         >
           BookMyAppointments
         </h2>
