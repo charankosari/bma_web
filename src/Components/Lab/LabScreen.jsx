@@ -298,20 +298,14 @@ const LabScreen = () => {
                   variant="h6"
                   sx={{ textTransform: "capitalize", color: "text.primary" }}
                 >
-                  Test: {test.name}
+                  <b> Test:</b> {test.name}
                 </Typography>
                 <Typography
                   variant="h6"
                   sx={{ textTransform: "capitalize", color: "text.primary" }}
                 >
-                  Hospital: {hospital.name}
+                  <b> Hospital:</b> {hospital.name}
                 </Typography>
-                {/* <Typography
-                 variant="subtitle1"
-                 sx={{ textTransform: "capitalize", color: "text.secondary" }}
-               >
-                 Speciality: {doctor.specialist}
-               </Typography> */}
               </Box>
               <IconButton
                 sx={{

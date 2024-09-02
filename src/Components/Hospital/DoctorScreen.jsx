@@ -315,19 +315,19 @@ const DoctorScreen = () => {
                   variant="h6"
                   sx={{ textTransform: "capitalize", color: "text.primary" }}
                 >
-                  Doctor: {doctor.name}
+                  <b> Doctor:</b> {doctor.name}
                 </Typography>
                 <Typography
                   variant="h6"
                   sx={{ textTransform: "capitalize", color: "text.primary" }}
                 >
-                  Hospital: {hospital.hospitalName}
+                  <b> Hospital:</b> {hospital.hospitalName}
                 </Typography>
                 <Typography
                   variant="subtitle1"
                   sx={{ textTransform: "capitalize", color: "text.secondary" }}
                 >
-                  Speciality: {doctor.specialist}
+                  <b> Speciality:</b> {doctor.specialist}
                 </Typography>
               </Box>
               <IconButton

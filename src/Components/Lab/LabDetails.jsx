@@ -31,7 +31,6 @@ const HospitalDetailsPage = ({
   const [tests, setTests] = useState([]);
   const [filteredTests, setFilteredTests] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [favorites, setFavorites] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState(null);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
@@ -88,27 +87,6 @@ const HospitalDetailsPage = ({
 
     setFilteredTests(filtered);
   }, [searchQuery, tests, selectedCategory]);
-
-  useEffect(() => {
-    const fetchFavorites = async () => {
-      try {
-        const response = await fetch(
-          "https://server.bookmyappointments.in/api/bma/me",
-          {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("jwtToken")}`,
-            },
-          }
-        );
-        const data = await response.json();
-        setFavorites(data.wishList || []);
-      } catch (error) {
-        console.error("Error fetching favorites:", error);
-      }
-    };
-
-    fetchFavorites();
-  }, []);
 
   const hasFutureBookings = (bookingids) => {
     const today = moment().startOf("day");
@@ -311,15 +289,6 @@ const HospitalDetailsPage = ({
                               {test.name}
                             </Typography>
                           </CardContent>
-                          {favorites?.includes(test._id) ? (
-                            <IconButton color="error">
-                              <FavoriteIcon sx={{ color: "red" }} />
-                            </IconButton>
-                          ) : (
-                            <IconButton color="default">
-                              <FavoriteIcon sx={{ color: "grey" }} />
-                            </IconButton>
-                          )}
                         </Card>
                       </Grid>
                     ))}
