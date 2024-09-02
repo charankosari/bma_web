@@ -100,6 +100,7 @@ const FileUpload = () => {
   };
 
   const handleDelete = async (filename) => {
+    console.log(filename);
     if (!deleteConfirmation) {
       setDeleteConfirmation(filename);
       return;
@@ -116,8 +117,7 @@ const FileUpload = () => {
     const jwtToken = localStorage.getItem("jwtToken");
     try {
       const response = await fetch(
-        // `http://localhost:9999/api/bma/delete/${filename}`,
-        "https://server.bookmyappointments.in/api/bma/upload",
+        `https://server.bookmyappointments.in/api/bma/delete/${filename}`,
         {
           method: "DELETE",
           headers: {
