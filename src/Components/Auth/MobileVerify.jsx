@@ -73,6 +73,7 @@ function MobileVerify({
         <input
           type="number"
           placeholder="Mobile Number"
+          id="inp"
           value={mobileNumber}
           onChange={handleMobileNumberChange}
           disabled={loading}
