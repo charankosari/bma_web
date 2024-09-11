@@ -81,7 +81,7 @@ const LabScreen = () => {
       } catch (error) {
         console.error("Error fetching test details:", error);
         localStorage.removeItem("jwtToken");
-        navigate("/");
+        window.location.href = "/";
       } finally {
         setLoading(false);
       }
@@ -103,7 +103,7 @@ const LabScreen = () => {
       } catch (error) {
         console.error("Error fetching user details:", error);
         localStorage.removeItem("jwtToken");
-        navigate("/");
+        window.location.href = "/";
       }
     };
 
@@ -123,12 +123,12 @@ const LabScreen = () => {
         } else {
           console.error("Failed to fetch user details");
           localStorage.removeItem("jwtToken");
-          navigate("/");
+          window.location.href = "/";
         }
       } catch (error) {
         console.error("Error checking favorite status:", error);
         localStorage.removeItem("jwtToken");
-        navigate("/");
+        window.location.href = "/";
       }
     };
 
@@ -186,7 +186,7 @@ const LabScreen = () => {
     } catch (error) {
       console.error("Error toggling favorite:", error);
       localStorage.removeItem("jwtToken");
-      navigate("/");
+      window.location.href = "/";
     }
   };
 

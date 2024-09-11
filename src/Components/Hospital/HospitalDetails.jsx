@@ -93,7 +93,7 @@ const HospitalDetailsPage = ({
 
     if (!token) {
       alert("You must be logged in to view this page.");
-      navigate("/");
+      window.location.href = "/";
     } else {
       navigate(`/doctor/${doctor._id}`, {
         state: {

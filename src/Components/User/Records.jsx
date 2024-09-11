@@ -91,13 +91,13 @@ const FileUpload = () => {
       } else {
         alert("Upload failed, please try again.");
         localStorage.removeItem("jwtToken");
-        navigate("/");
+        window.location.href = "/";
       }
     } catch (error) {
       console.error("Error uploading file:", error);
       alert("Error occurred, please try again.");
       localStorage.removeItem("jwtToken");
-      navigate("/");
+      window.location.href = "/";
     } finally {
       setUploadingFile(false);
       setShowUploadOptions(false);
@@ -136,12 +136,12 @@ const FileUpload = () => {
       } else {
         alert("Delete failed, please try again.");
         localStorage.removeItem("jwtToken");
-        navigate("/");
+        window.location.href = "/";
       }
     } catch (error) {
       console.error("Error deleting file:", error);
       localStorage.removeItem("jwtToken");
-      navigate("/");
+      window.location.href = "/";
     } finally {
       setDeletingFile(null);
     }
@@ -163,7 +163,7 @@ const FileUpload = () => {
     } catch (error) {
       console.error("Error fetching files:", error);
       localStorage.removeItem("jwtToken");
-      navigate("/");
+      window.location.href = "/";
     } finally {
       setLoading(false);
     }

@@ -45,7 +45,7 @@ const Profile = ({ login, toggleLogin, mobile, setMobile }) => {
       } catch (error) {
         console.error("Error fetching user data:", error);
         localStorage.removeItem("jwtToken");
-        navigate("/");
+        window.location.href = "/";
       }
     };
     fetchUserData();
@@ -88,7 +88,7 @@ const Profile = ({ login, toggleLogin, mobile, setMobile }) => {
       console.error("Error updating profile:", error);
       alert("An error occurred while updating profile.");
       localStorage.removeItem("jwtToken");
-      navigate("/");
+      window.location.href = "/";
     } finally {
       setLoading(false);
     }
@@ -123,7 +123,7 @@ const Profile = ({ login, toggleLogin, mobile, setMobile }) => {
       console.error("Error sending OTP:", error);
       alert("An error occurred while sending OTP.");
       localStorage.removeItem("jwtToken");
-      navigate("/");
+      window.location.href = "/";
     } finally {
       setLoading(false);
     }
@@ -162,13 +162,13 @@ const Profile = ({ login, toggleLogin, mobile, setMobile }) => {
       } else {
         alert("Failed to verify OTP or update mobile number.");
         localStorage.removeItem("jwtToken");
-        navigate("/");
+        window.location.href = "/";
       }
     } catch (error) {
       console.error("Error verifying OTP:", error);
       alert("An error occurred while verifying OTP.");
       localStorage.removeItem("jwtToken");
-      navigate("/");
+      window.location.href = "/";
     } finally {
       setLoading(false);
     }

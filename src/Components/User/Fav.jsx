@@ -85,7 +85,7 @@ const Fav = () => {
     } catch (error) {
       console.error("Error fetching hospital details:", error);
       localStorage.removeItem("jwtToken");
-      navigate("/");
+      window.location.href = "/";
     }
   };
 
@@ -111,7 +111,7 @@ const Fav = () => {
     } catch (error) {
       console.error("Error fetching hospital details:", error);
       localStorage.removeItem("jwtToken");
-      navigate("/");
+      window.location.href = "/";
     }
   };
 

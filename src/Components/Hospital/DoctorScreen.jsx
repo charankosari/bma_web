@@ -84,7 +84,7 @@ const DoctorScreen = () => {
       } catch (error) {
         console.error("Error fetching doctor details:", error);
         localStorage.removeItem("jwtToken");
-        navigate("/");
+        window.location.href = "/";
       } finally {
         setLoading(false);
       }
@@ -110,7 +110,7 @@ const DoctorScreen = () => {
       } catch (error) {
         console.error("Error fetching user details:", error);
         localStorage.removeItem("jwtToken");
-        navigate("/");
+        window.location.href = "/";
       }
     };
     const fetchFavoriteStatus = async () => {
@@ -133,12 +133,12 @@ const DoctorScreen = () => {
         } else {
           console.error("Failed to fetch user details");
           localStorage.removeItem("jwtToken");
-          navigate("/");
+          window.location.href = "/";
         }
       } catch (error) {
         console.error("Error checking favorite status:", error);
         localStorage.removeItem("jwtToken");
-        navigate("/");
+        window.location.href = "/";
       }
     };
 

@@ -101,13 +101,13 @@ const BookingScreen = () => {
       } else {
         alert("Booking failed. Please try again.");
         localStorage.removeItem("jwtToken");
-        navigate("/");
+        window.location.href = "/";
       }
     } catch (error) {
       console.error("Error making booking:", error);
       alert("An error occurred. Please try again.");
       localStorage.removeItem("jwtToken");
-      navigate("/");
+      window.location.href = "/";
     } finally {
       setLoading(false);
     }

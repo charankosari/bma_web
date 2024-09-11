@@ -55,12 +55,12 @@ const Bookings = () => {
         } else {
           setError("Failed to fetch booking details");
           localStorage.removeItem("jwtToken");
-          navigate("/");
+          window.location.href = "/";
         }
       } catch (error) {
         setError(error.message || "An error occurred");
         localStorage.removeItem("jwtToken");
-        navigate("/");
+        window.location.href = "/";
       } finally {
         setLoading(false);
       }
