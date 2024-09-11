@@ -24,7 +24,7 @@ const Fav = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchFavorites = async () => {
+    const fetchFavoritesAndHospitals = async () => {
       try {
         const jwtToken = localStorage.getItem("jwtToken");
         if (!jwtToken) {
@@ -33,7 +33,8 @@ const Fav = () => {
           return;
         }
 
-        const response = await fetch(
+        // Fetch user's favorites
+        const favoriteResponse = await fetch(
           "https://server.bookmyappointments.in/api/bma/me/wishlist",
           {
             headers: {
@@ -43,16 +44,56 @@ const Fav = () => {
           }
         );
 
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
+        if (!favoriteResponse.ok) {
+          throw new Error("Failed to fetch favorites");
         }
 
-        const data = await response.json();
-        if (data.success) {
-          setFavorites(data.data);
-        } else {
-          setError("Failed to fetch favorites");
+        const favoriteData = await favoriteResponse.json();
+        if (!favoriteData.success) {
+          throw new Error("Failed to fetch favorites");
         }
+
+        setFavorites(favoriteData.data);
+
+        // Fetch all hospitals, doctors, and tests
+        const hospitalResponse = await fetch(
+          "https://server.bookmyappointments.in/api/bma/hospital/admin/getallhospitalsrem",
+          {
+            headers: {
+              Authorization: `Bearer ${jwtToken}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
+
+        if (!hospitalResponse.ok) {
+          throw new Error("Failed to fetch hospitals data");
+        }
+
+        const hospitalData = await hospitalResponse.json();
+        const { hospitals } = hospitalData;
+
+        // Filter favorites by matching with hospitals' doctors and tests
+        const filteredDoctors = favoriteData.data.doctors.filter(
+          (favDoctor) => {
+            return hospitals.some((hospital) =>
+              hospital.doctors.some(
+                (doctor) => doctor.doctorid === favDoctor._id
+              )
+            );
+          }
+        );
+
+        const filteredTests = favoriteData.data.tests.filter((favTest) => {
+          return hospitals.some((hospital) =>
+            hospital.tests.some((test) => test.testid === favTest._id)
+          );
+        });
+
+        setFavorites({
+          doctors: filteredDoctors,
+          tests: filteredTests,
+        });
       } catch (error) {
         setError(error.message || "An error occurred");
       } finally {
@@ -60,7 +101,7 @@ const Fav = () => {
       }
     };
 
-    fetchFavorites();
+    fetchFavoritesAndHospitals();
   }, []);
 
   const handleDoctorCardClick = async (doctor) => {
