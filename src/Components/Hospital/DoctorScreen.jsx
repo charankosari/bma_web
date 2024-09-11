@@ -17,7 +17,6 @@ import FavoriteIcon from "@mui/icons-material/Favorite";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import moment from "moment";
 import Footer from "../Footer";
-import { useNavigate } from "react-router-dom";
 import {
   AccessTime as AccessTimeIcon,
   Cancel as CancelIcon,

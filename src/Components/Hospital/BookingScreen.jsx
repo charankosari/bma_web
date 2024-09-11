@@ -13,7 +13,6 @@ import {
 } from "@mui/material";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
-import { useNavigate } from "react-router-dom";
 import L from "leaflet";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import Footer from "../Footer";

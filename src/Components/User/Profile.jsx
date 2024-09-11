@@ -14,6 +14,7 @@ import {
 } from "@mui/material";
 import axios from "axios";
 import Footer from "../Footer";
+import { useNavigate } from "react-router";
 
 const Profile = ({ login, toggleLogin, mobile, setMobile }) => {
   const [userDetails, setUserDetails] = useState({});
@@ -23,6 +24,7 @@ const Profile = ({ login, toggleLogin, mobile, setMobile }) => {
   const [newNumber, setNewNumber] = useState("");
   const [numberModalVisible, setNumberModalVisible] = useState(false);
   const [initialDetails, setInitialDetails] = useState({});
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchUserData = async () => {

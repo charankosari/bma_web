@@ -16,7 +16,6 @@ import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import Footer from "../Footer";
-import { useNavigate } from "react-router-dom";
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
   iconRetinaUrl:

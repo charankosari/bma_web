@@ -23,7 +23,7 @@ import {
 } from "@mui/icons-material";
 import { Worker, Viewer } from "@react-pdf-viewer/core";
 import "@react-pdf-viewer/core/lib/styles/index.css";
-
+import { useNavigate } from "react-router";
 const imageExtensions = [".png", ".jpg", ".jpeg", ".gif"];
 
 const isImage = (filename) => {
@@ -41,6 +41,7 @@ const FileUpload = () => {
   const fileInputRef = useRef(null);
   const imageInputRef = useRef(null);
   const [deletingFile, setDeletingFile] = useState(null);
+  const navigate = useNavigate();
 
   const handleUpload = async (type) => {
     if (type === "image") {
