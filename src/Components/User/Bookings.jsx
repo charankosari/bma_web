@@ -11,6 +11,7 @@ import {
   useMediaQuery,
 } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
+import { useNavigate } from "react-router";
 import EmojiEmotionsIcon from "@mui/icons-material/EmojiEmotions"; // Icon for no bookings
 import moment from "moment";
 import Footer from "../Footer";
@@ -21,6 +22,7 @@ const Bookings = () => {
   const [error, setError] = useState(null);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchBookingDetails = async () => {
@@ -52,9 +54,13 @@ const Bookings = () => {
           setBookingDetails(data.bookingDetails);
         } else {
           setError("Failed to fetch booking details");
+          localStorage.removeItem("jwtToken");
+          navigate("/");
         }
       } catch (error) {
         setError(error.message || "An error occurred");
+        localStorage.removeItem("jwtToken");
+        navigate("/");
       } finally {
         setLoading(false);
       }

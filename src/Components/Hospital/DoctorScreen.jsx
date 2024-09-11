@@ -17,6 +17,7 @@ import FavoriteIcon from "@mui/icons-material/Favorite";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import moment from "moment";
 import Footer from "../Footer";
+import { useNavigate } from "react-router-dom";
 import {
   AccessTime as AccessTimeIcon,
   Cancel as CancelIcon,
@@ -27,7 +28,6 @@ const DoctorScreen = () => {
   const navigate = useNavigate();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
-
   const [doctor, setDoctor] = useState(null);
   const [hospital, setHospital] = useState(null);
   const [userDetails, setUserDetails] = useState(null);
@@ -84,8 +84,10 @@ const DoctorScreen = () => {
         setDates(filteredDates);
       } catch (error) {
         console.error("Error fetching doctor details:", error);
+        localStorage.removeItem("jwtToken");
+        navigate("/");
       } finally {
-        setLoading(false); // Stop loading spinner once fetch is complete
+        setLoading(false);
       }
     };
 
@@ -108,6 +110,8 @@ const DoctorScreen = () => {
         setUserDetails(data.user);
       } catch (error) {
         console.error("Error fetching user details:", error);
+        localStorage.removeItem("jwtToken");
+        navigate("/");
       }
     };
     const fetchFavoriteStatus = async () => {
@@ -129,9 +133,13 @@ const DoctorScreen = () => {
           setIsFavorite(isWishlisted);
         } else {
           console.error("Failed to fetch user details");
+          localStorage.removeItem("jwtToken");
+          navigate("/");
         }
       } catch (error) {
         console.error("Error checking favorite status:", error);
+        localStorage.removeItem("jwtToken");
+        navigate("/");
       }
     };
 

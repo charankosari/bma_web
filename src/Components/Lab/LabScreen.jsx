@@ -80,6 +80,8 @@ const LabScreen = () => {
         setDates(filteredDates);
       } catch (error) {
         console.error("Error fetching test details:", error);
+        localStorage.removeItem("jwtToken");
+        navigate("/");
       } finally {
         setLoading(false);
       }
@@ -100,6 +102,8 @@ const LabScreen = () => {
         setUserDetails(data.user);
       } catch (error) {
         console.error("Error fetching user details:", error);
+        localStorage.removeItem("jwtToken");
+        navigate("/");
       }
     };
 
@@ -118,9 +122,13 @@ const LabScreen = () => {
           setIsFavorite(isWishlisted);
         } else {
           console.error("Failed to fetch user details");
+          localStorage.removeItem("jwtToken");
+          navigate("/");
         }
       } catch (error) {
         console.error("Error checking favorite status:", error);
+        localStorage.removeItem("jwtToken");
+        navigate("/");
       }
     };
 
@@ -177,6 +185,8 @@ const LabScreen = () => {
       }
     } catch (error) {
       console.error("Error toggling favorite:", error);
+      localStorage.removeItem("jwtToken");
+      navigate("/");
     }
   };
 

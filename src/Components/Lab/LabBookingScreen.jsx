@@ -16,7 +16,7 @@ import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import Footer from "../Footer";
-
+import { useNavigate } from "react-router-dom";
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
   iconRetinaUrl:
@@ -72,6 +72,7 @@ const BookingScreen = () => {
   const { date, time, name, amountpaid } = bookingData;
   const { latitude, longitude } = hospital.address;
   const { consultancyfee, servicefee } = test.price;
+  const navigate = useNavigate();
   const handleViewOnGoogleMaps = () => {
     const googleMapsUrl = `https://www.google.com/maps/search/?api=1&query=${latitude},${longitude}`;
     window.open(googleMapsUrl, "_blank");
@@ -100,10 +101,14 @@ const BookingScreen = () => {
         setBookingConfirmed(true); // Set bookingConfirmed to true
       } else {
         alert("Booking failed. Please try again.");
+        localStorage.removeItem("jwtToken");
+        navigate("/");
       }
     } catch (error) {
       console.error("Error making booking:", error);
       alert("An error occurred. Please try again.");
+      localStorage.removeItem("jwtToken");
+      navigate("/");
     } finally {
       setLoading(false);
     }

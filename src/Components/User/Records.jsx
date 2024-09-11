@@ -89,10 +89,14 @@ const FileUpload = () => {
         fetchFiles(jwtToken);
       } else {
         alert("Upload failed, please try again.");
+        localStorage.removeItem("jwtToken");
+        navigate("/");
       }
     } catch (error) {
       console.error("Error uploading file:", error);
       alert("Error occurred, please try again.");
+      localStorage.removeItem("jwtToken");
+      navigate("/");
     } finally {
       setUploadingFile(false);
       setShowUploadOptions(false);
@@ -130,9 +134,13 @@ const FileUpload = () => {
         setFiles(updatedFiles);
       } else {
         alert("Delete failed, please try again.");
+        localStorage.removeItem("jwtToken");
+        navigate("/");
       }
     } catch (error) {
       console.error("Error deleting file:", error);
+      localStorage.removeItem("jwtToken");
+      navigate("/");
     } finally {
       setDeletingFile(null);
     }
@@ -153,6 +161,8 @@ const FileUpload = () => {
       setFiles(data.user.files);
     } catch (error) {
       console.error("Error fetching files:", error);
+      localStorage.removeItem("jwtToken");
+      navigate("/");
     } finally {
       setLoading(false);
     }
