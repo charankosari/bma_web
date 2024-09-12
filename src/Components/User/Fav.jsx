@@ -53,9 +53,6 @@ const Fav = () => {
           throw new Error("Failed to fetch favorites");
         }
 
-        setFavorites(favoriteData.data);
-
-        // Fetch all hospitals, doctors, and tests
         const hospitalResponse = await fetch(
           "https://server.bookmyappointments.in/api/bma/hospital/admin/getallhospitalsrem",
           {
@@ -65,28 +62,29 @@ const Fav = () => {
             },
           }
         );
-
         if (!hospitalResponse.ok) {
           throw new Error("Failed to fetch hospitals data");
         }
-
         const hospitalData = await hospitalResponse.json();
-        const { hospitals } = hospitalData;
-
-        // Filter favorites by matching with hospitals' doctors and tests
+        const { c: doctorsData, d: testsData } = hospitalData;
         const filteredDoctors = favoriteData.data.doctors.filter(
           (favDoctor) => {
-            return hospitals.some((hospital) =>
-              hospital.doctors.some(
-                (doctor) => doctor.doctorid === favDoctor._id
-              )
+            const foundDoctor = doctorsData.find(
+              (doc) => doc.doctor._id === favDoctor._id
+            );
+            return (
+              foundDoctor &&
+              Object.keys(foundDoctor.doctor.bookingsids).length > 0
             );
           }
         );
 
         const filteredTests = favoriteData.data.tests.filter((favTest) => {
-          return hospitals.some((hospital) =>
-            hospital.tests.some((test) => test.testid === favTest._id)
+          const foundTest = testsData.find(
+            (test) => test.test._id === favTest._id
+          );
+          return (
+            foundTest && Object.keys(foundTest.test.bookingsids).length > 0
           );
         });
 
